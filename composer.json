@@ -1,6 +1,6 @@
 {
     "name": "akira/laravel-rag",
-    "description": "This is my package laravel-rag",
+    "description": "Akira RAG for Laravel 12 with PostgreSQL + pgvector",
     "keywords": [
         "rag",
         "laravel",
@@ -17,8 +17,9 @@
     ],
     "require": {
         "php": "^8.4",
+        "illuminate/contracts": "^12.0",
         "spatie/laravel-package-tools": "^1.16",
-        "illuminate/contracts": "^12.0"
+        "spatie/laravel-data": "^4.6"
     },
     "require-dev": {
         "akira/setup": "^1.2",
@@ -40,13 +41,17 @@
     },
     "autoload": {
         "psr-4": {
-            "Rag\\Rag\\": "src/",
-            "Rag\\Rag\\Database\\Factories\\": "database/factories/"
-        }
+            "Akira\\Rag\\": "src/",
+            "Akira\\Rag\\Database\\Factories\\": "database/factories/",
+            "Spatie\\LaravelData\\": "src/Support/Compat/Spatie/LaravelData/"
+        },
+        "files": [
+            "src/Support/helpers.php"
+        ]
     },
     "autoload-dev": {
         "psr-4": {
-            "Rag\\Rag\\Tests\\": "tests/",
+            "Akira\\Rag\\Tests\\": "tests/",
             "Workbench\\App\\": "workbench/app/"
         }
     },
@@ -82,10 +87,10 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Rag\\Rag\\RagServiceProvider"
+                "Akira\\Rag\\RagServiceProvider"
             ],
             "aliases": {
-                "Rag": "Rag\\Rag\\Facades\\Rag"
+                "Rag": "Akira\\Rag\\Facades\\Rag"
             }
         }
     },
