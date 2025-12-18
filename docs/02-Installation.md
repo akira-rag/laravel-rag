@@ -46,4 +46,4 @@ CREATE EXTENSION IF NOT EXISTS vector;
 
 - The migration will create HNSW indexes and a generated `tsvector` column when running on PostgreSQL. For SQLite, compatible text/json columns are used to keep tests fast and deterministic.
 
-Previous: [01 Introduction](01-Introduction.md) | Next: [03 Configuration](03-Configuration.md)
+Previous: [01 Introduction](01-Introduction.md) | Next: [03 Commands](03-Commands.md)

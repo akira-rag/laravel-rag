@@ -66,6 +66,12 @@ $answer = Rag::ask('What are the notice periods?');
 - 08 Cache and Audit: docs/08-Cache-and-Audit.md
 - 10 Recipes: docs/10-Recipes.md
 
+### CLI Commands
+
+Commands support interactive prompts and non-interactive flags.
+
+- Commands Guide: docs/03-Commands.md
+
 ## Changelog
 
 Please see [CHANGELOG](CHANGELOG.md) for more information on what has changed recently.

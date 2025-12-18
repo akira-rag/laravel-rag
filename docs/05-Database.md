@@ -22,4 +22,4 @@ Embedding dimensions
 Full‑text search
 - `content_tsvector` is generated from `content` using the configured `ts_config` (default `simple`). You can adjust it in queries or by changing the generated expression.
 
-Previous: [03 Configuration](03-Configuration.md) | Next: [05 Tenancy](05-Tenancy.md)
+Previous: [04 Configuration](04-Configuration.md) | Next: [06 Tenancy](06-Tenancy.md)

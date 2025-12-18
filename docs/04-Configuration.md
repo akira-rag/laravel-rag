@@ -51,4 +51,4 @@ Advanced notes:
 - `cache.enabled` and `audit.enabled` can be toggled at runtime for environments.
 - `queue` is reserved for future background jobs; null defaults to app settings.
 
-Previous: [02 Installation](02-Installation.md) | Next: [04 Database](04-Database.md)
+Previous: [03 Commands](03-Commands.md) | Next: [05 Database](05-Database.md)

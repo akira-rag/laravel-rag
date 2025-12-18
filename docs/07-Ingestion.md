@@ -32,4 +32,4 @@ Validation rules
 Metadata
 - `meta` accepts a JSON‑serializable array for additional attributes.
 
-Previous: [05 Tenancy](05-Tenancy.md) | Next: [07 Asking](07-Asking.md)
+Previous: [06 Tenancy](06-Tenancy.md) | Next: [08 Asking](08-Asking.md)

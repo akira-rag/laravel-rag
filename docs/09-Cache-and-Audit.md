@@ -16,4 +16,4 @@ Audit records
 - `rag_queries`: stores the question and tenant context.
 - `rag_query_chunks`: stores top‑k chunk references with score and rank.
 
-Previous: [07 Asking](07-Asking.md) | Next: [10 Recipes](10-Recipes.md)
+Previous: [08 Asking](08-Asking.md) | Next: [10 Recipes](10-Recipes.md)

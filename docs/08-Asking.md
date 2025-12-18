@@ -36,4 +36,4 @@ Caching
 - Cache key includes tenant id (or null in single‑tenant), question, and filters.
 - Configure via `cache.enabled`, `ttl_seconds`, and `prefix`.
 
-Previous: [06 Ingestion](06-Ingestion.md) | Next: [08 Cache and Audit](08-Cache-and-Audit.md)
+Previous: [07 Ingestion](07-Ingestion.md) | Next: [09 Cache and Audit](09-Cache-and-Audit.md)

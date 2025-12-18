@@ -34,4 +34,4 @@ Validation rules
 Testing patterns
 - Toggle `tenancy.enabled` per test and swap resolvers to emulate multiple tenants and verify isolation.
 
-Previous: [04 Database](04-Database.md) | Next: [06 Ingestion](06-Ingestion.md)
+Previous: [05 Database](05-Database.md) | Next: [07 Ingestion](07-Ingestion.md)
