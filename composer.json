@@ -64,7 +64,7 @@
         "test:lint": "pint --test",
         "test:refactor": "rector --dry-run",
         "test:arch": "pest --filter=arch",
-        "test:types": "phpstan analyse",
+        "test:types": "phpstan analyse --configuration=phpstan.neon",
         "test:type-coverage": "pest --type-coverage --min=100 --compact",
         "test:coverage": "pest --parallel --coverage --compact --exactly=100",
         "test:typos": "peck",
