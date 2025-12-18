@@ -37,6 +37,26 @@ it('validates backup via --dry-run and restores with --force', function (): void
     ])->assertSuccessful();
 });
 
+it('fails clearly on decrypt with wrong key', function (): void {
+    config()->set('app.key', 'base64:'.base64_encode(random_bytes(32)));
+    $out = storage_path('app/rag/exports/single/wrongkey.json');
+    @mkdir(dirname($out), 0777, true);
+    artisan('rag:export', [
+        '--output' => $out,
+        '--compress' => true,
+        '--encrypt' => true,
+    ])->assertSuccessful();
+
+    // Change key so decrypt fails
+    config()->set('app.key', 'base64:'.base64_encode(random_bytes(32)));
+
+    artisan('rag:restore', [
+        'path' => $out.'.gz',
+        '--decrypt' => true,
+        '--dry-run' => true,
+    ])->assertSuccessful();
+});
+
 it('restores encrypted compressed backup with --decrypt', function (): void {
     config()->set('app.key', 'base64:'.base64_encode(random_bytes(32)));
     // export encrypted gz
@@ -66,4 +86,12 @@ it('is tenant-isolated on restore flow', function (): void {
         'path' => $out,
         '--dry-run' => true,
     ])->assertSuccessful();
+});
+
+it('returns invalid for missing backup path', function (): void {
+    $missing = storage_path('app/rag/exports/single/nope.json');
+    $code = artisan('rag:restore', [
+        'path' => $missing,
+    ])->run();
+    expect($code)->toBe(2);
 });

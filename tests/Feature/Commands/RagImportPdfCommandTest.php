@@ -42,3 +42,11 @@ it('dry-run shows summary without persisting', function (): void {
     ])->assertSuccessful();
 });
 
+it('returns invalid when directory has no PDFs', function (): void {
+    $dir = storage_path('app/docs/empty');
+    @mkdir($dir, 0777, true);
+    $code = artisan('rag:import:pdf', [
+        'path' => $dir,
+    ])->run();
+    expect($code)->toBe(2);
+});

@@ -7,11 +7,6 @@ namespace Akira\Rag\Commands;
 use Akira\Rag\Tenant\TenantContext;
 use Illuminate\Console\Command;
 use Illuminate\Filesystem\Filesystem;
-use Illuminate\Support\Carbon;
-
-use function Laravel\Prompts\info;
-use function Laravel\Prompts\text;
-
 
 final class RagBackupCommand extends Command
 {
@@ -25,7 +20,7 @@ final class RagBackupCommand extends Command
     public function handle(TenantContext $tenant, Filesystem $files): int
     {
         $suggestDir = storage_path('app/rag/backups/'.($tenant->enabled() ? ($tenant->current() ?? 'unknown') : 'single'));
-        $output = (string) ($this->option('output') ?? $suggestDir.'/backup-'.Carbon::now()->format('Ymd-His').'.json');
+        $output = (string) ($this->option('output') ?? $suggestDir.'/backup-'.\Illuminate\Support\Facades\Date::now()->format('Ymd-His').'.json');
         $retain = (int) ($this->option('retain') ?? 7);
         $encrypt = ! (bool) $this->option('no-encryption');
 
@@ -44,7 +39,7 @@ final class RagBackupCommand extends Command
         // prune old backups
         $files->ensureDirectoryExists(dirname($output));
         $filesList = collect($files->files(dirname($output)))
-            ->filter(fn ($f) => str_starts_with($files->name($f->getPathname()), 'backup-'))
+            ->filter(fn ($f): bool => str_starts_with($files->name($f->getPathname()), 'backup-'))
             ->sortByDesc(fn ($f) => $files->lastModified($f->getPathname()))
             ->values();
 
@@ -60,5 +55,3 @@ final class RagBackupCommand extends Command
         return self::SUCCESS;
     }
 }
-
-

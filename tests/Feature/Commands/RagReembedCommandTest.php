@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use Akira\Rag\Models\RagDocument;
 use Tests\Helpers\FakeTenantResolver;
+
 use function Pest\Laravel\artisan;
 
 beforeEach(function (): void {
@@ -21,8 +22,13 @@ it('reembeds with --all', function (): void {
 });
 
 it('reembeds with --document_id', function (): void {
-    $id = Akira\Rag\Models\RagDocument::query()->first()->getKey();
+    $id = RagDocument::query()->first()->getKey();
     artisan('rag:reembed', ['--document_id' => $id, '--model' => 'text-embedding-3-small'])->assertSuccessful();
+});
+
+it('returns invalid when neither all nor document_id', function (): void {
+    $code = artisan('rag:reembed')->run();
+    expect($code)->toBe(2);
 });
 
 it('scopes reembed by tenant', function (): void {
@@ -30,7 +36,7 @@ it('scopes reembed by tenant', function (): void {
     config()->set('rag.tenancy.resolver', FakeTenantResolver::class);
 
     // tenant A
-    app()->bind(FakeTenantResolver::class, fn () => new FakeTenantResolver('tenant-a'));
+    app()->bind(FakeTenantResolver::class, fn (): FakeTenantResolver => new FakeTenantResolver('tenant-a'));
     artisan('rag:ingest', [
         '--title' => 'A',
         '--source_type' => 'note',
@@ -40,7 +46,7 @@ it('scopes reembed by tenant', function (): void {
     $aId = RagDocument::query()->first()->getKey();
 
     // tenant B
-    app()->bind(FakeTenantResolver::class, fn () => new FakeTenantResolver('tenant-b'));
+    app()->bind(FakeTenantResolver::class, fn (): FakeTenantResolver => new FakeTenantResolver('tenant-b'));
     artisan('rag:ingest', [
         '--title' => 'B',
         '--source_type' => 'note',
@@ -50,6 +56,6 @@ it('scopes reembed by tenant', function (): void {
 
     // reembed only for current tenant (B)
     artisan('rag:reembed', ['--all' => true])->assertSuccessful();
-    app()->bind(FakeTenantResolver::class, fn () => new FakeTenantResolver('tenant-a'));
+    app()->bind(FakeTenantResolver::class, fn (): FakeTenantResolver => new FakeTenantResolver('tenant-a'));
     expect(RagDocument::query()->find($aId))->not()->toBeNull();
 });

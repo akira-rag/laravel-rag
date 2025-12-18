@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Tests\Helpers\FakeTenantResolver;
+
 use function Pest\Laravel\artisan;
 
 it('shows stats in single-tenant', function (): void {
@@ -29,7 +30,7 @@ it('is tenant-scoped', function (): void {
     config()->set('rag.tenancy.enabled', true);
     config()->set('rag.tenancy.resolver', FakeTenantResolver::class);
 
-    app()->bind(FakeTenantResolver::class, fn () => new FakeTenantResolver('t-1'));
+    app()->bind(FakeTenantResolver::class, fn (): FakeTenantResolver => new FakeTenantResolver('t-1'));
     artisan('rag:ingest', [
         '--title' => 'T1',
         '--source_type' => 'note',
@@ -37,7 +38,7 @@ it('is tenant-scoped', function (): void {
         '--text' => 'x',
     ])->assertSuccessful();
 
-    app()->bind(FakeTenantResolver::class, fn () => new FakeTenantResolver('t-2'));
+    app()->bind(FakeTenantResolver::class, fn (): FakeTenantResolver => new FakeTenantResolver('t-2'));
     artisan('rag:ingest', [
         '--title' => 'T2',
         '--source_type' => 'note',
@@ -45,7 +46,7 @@ it('is tenant-scoped', function (): void {
         '--text' => 'y',
     ])->assertSuccessful();
 
-    app()->bind(FakeTenantResolver::class, fn () => new FakeTenantResolver('t-1'));
+    app()->bind(FakeTenantResolver::class, fn (): FakeTenantResolver => new FakeTenantResolver('t-1'));
     $code = artisan('rag:stats')->run();
     expect($code)->toBe(0);
 });

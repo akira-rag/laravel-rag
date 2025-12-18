@@ -6,7 +6,9 @@
             "embeddings",
             "compat",
             "lorem",
-            "pnpm"
+            "pnpm",
+            "reembed",
+            "observability"
         ],
         "paths": []
     }

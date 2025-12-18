@@ -7,8 +7,7 @@ use function Pest\Laravel\artisan;
 it('runs doctor command (if available) and does not crash', function (): void {
     try {
         artisan('rag:doctor')->assertSuccessful();
-    } catch (Throwable $e) {
+    } catch (Throwable) {
         expect(true)->toBeTrue();
     }
 });
-

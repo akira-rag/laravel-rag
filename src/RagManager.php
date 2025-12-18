@@ -122,7 +122,7 @@ final readonly class RagManager
                 $q->where('document_id', $filters['document_id']);
             })
             ->orderBy('position')
-            ->limit((int) $this->config->get('rag.retrieval.top_k', 5))
+            ->limit($this->config->integer('rag.retrieval.top_k', 5))
             ->get(['id', 'position'])
             ->map(fn ($c): array => ['id' => (string) $c->id, 'score' => 1.0])
             ->values()
@@ -160,7 +160,7 @@ final readonly class RagManager
         ];
 
         if ($cacheEnabled) {
-            $ttl = (int) $this->config->get('rag.cache.ttl_seconds', 1209600);
+            $ttl = $this->config->integer('rag.cache.ttl_seconds', 1209600);
             $this->cache->store()->put($cacheKey, $result, $ttl);
         }
 
@@ -172,8 +172,8 @@ final readonly class RagManager
      */
     public function chunk(string $content): array
     {
-        $target = (int) $this->config->get('rag.chunking.target_tokens', 800);
-        $overlap = (int) $this->config->get('rag.chunking.overlap_tokens', 120);
+        $target = $this->config->integer('rag.chunking.target_tokens', 800);
+        $overlap = $this->config->integer('rag.chunking.overlap_tokens', 120);
 
         $words = preg_split('/\s+/', mb_trim($content)) ?: [];
         if ($words === [] || (count($words) === 1 && $words[0] === '')) {

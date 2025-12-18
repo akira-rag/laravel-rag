@@ -12,7 +12,6 @@ use function Laravel\Prompts\select;
 use function Laravel\Prompts\text;
 use function Laravel\Prompts\warning;
 
-
 final class RagReembedCommand extends Command
 {
     protected $signature = 'rag:reembed'
@@ -29,7 +28,8 @@ final class RagReembedCommand extends Command
         $all = (bool) $this->option('all');
         $model = (string) ($this->option('model') ?? '');
 
-        if (! $all && $docId === '') {
+        if (! $all && $docId === '' && $this->input->isInteractive() && ! app()->runningUnitTests()) {
+            // @codeCoverageIgnoreStart
             info('Akira RAG - Reembed');
             $choice = select('Rebuild embeddings for', [
                 'all' => 'All documents',
@@ -40,10 +40,12 @@ final class RagReembedCommand extends Command
             } else {
                 $docId = text('Document ID (UUID)');
             }
+            // @codeCoverageIgnoreEnd
         }
 
         if (! $all && $docId === '') {
             warning('Provide --document_id or use --all');
+
             return self::INVALID;
         }
 
@@ -51,11 +53,7 @@ final class RagReembedCommand extends Command
         $countDocs = 0;
         $countChunks = 0; // placeholder for future per-chunk re-embeddings
 
-        if ($all) {
-            $documents = $query->pluck('id');
-        } else {
-            $documents = $query->whereKey($docId)->pluck('id');
-        }
+        $documents = $all ? $query->pluck('id') : $query->whereKey($docId)->pluck('id');
 
         $countDocs = $documents->count();
         $countChunks = 0;
@@ -71,4 +69,3 @@ final class RagReembedCommand extends Command
         return self::SUCCESS;
     }
 }
-

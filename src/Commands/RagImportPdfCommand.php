@@ -8,11 +8,8 @@ use Akira\Rag\Facades\Rag;
 use Illuminate\Console\Command;
 use Illuminate\Filesystem\Filesystem;
 
-use function Laravel\Prompts\confirm;
-use function Laravel\Prompts\info;
 use function Laravel\Prompts\text;
 use function Laravel\Prompts\warning;
-
 
 final class RagImportPdfCommand extends Command
 {
@@ -32,14 +29,16 @@ final class RagImportPdfCommand extends Command
         $path = (string) $this->argument('path');
         if (! $files->exists($path)) {
             warning('Path not found: '.$path);
+
             return self::INVALID;
         }
 
         $isDir = $files->isDirectory($path);
-        $pdfFiles = $isDir ? collect($files->files($path))->filter(fn ($f) => strtolower($files->extension($f->getPathname())) === 'pdf')->map->getPathname()->values()->all() : [$path];
+        $pdfFiles = $isDir ? collect($files->files($path))->filter(fn ($f): bool => mb_strtolower($files->extension($f->getPathname())) === 'pdf')->map->getPathname()->values()->all() : [$path];
 
         if ($pdfFiles === []) {
             warning('No PDF files found.');
+
             return self::INVALID;
         }
 
@@ -57,8 +56,9 @@ final class RagImportPdfCommand extends Command
 
             if ($dryRun) {
                 $this->components->twoColumnDetail('PDF', $pdf);
-                $this->components->twoColumnDetail('Bytes', (string) strlen($raw));
-                $this->components->twoColumnDetail('Extracted (approx chars)', (string) strlen($textContent));
+                $this->components->twoColumnDetail('Bytes', (string) mb_strlen($raw));
+                $this->components->twoColumnDetail('Extracted (approx chars)', (string) mb_strlen($textContent));
+
                 continue;
             }
 
@@ -84,7 +84,7 @@ final class RagImportPdfCommand extends Command
         // This is placeholder-level but PHP-native and deterministic.
         $text = '';
         if (preg_match_all('/\((.*?)\)\s*Tj/s', $raw, $m)) {
-            $text .= implode("\n", array_map(fn ($s) => strip_tags($s), $m[1]));
+            $text .= implode("\n", array_map(strip_tags(...), $m[1]));
         }
         if (preg_match_all('/\[(.*?)\]\s*TJ/s', $raw, $m2)) {
             foreach ($m2[1] as $group) {
@@ -93,8 +93,7 @@ final class RagImportPdfCommand extends Command
                 }
             }
         }
-        return trim($text) !== '' ? $text : 'PDF content';
+
+        return mb_trim($text) !== '' ? $text : 'PDF content';
     }
 }
-
-

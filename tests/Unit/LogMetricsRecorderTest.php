@@ -20,4 +20,3 @@ it('records increment and timing to logger', function (): void {
         ->and($logger->logs[1]['context']['metric'])->toBe('rag.query.duration_ms')
         ->and($logger->logs[1]['context']['ms'])->toBe(12.5);
 });
-

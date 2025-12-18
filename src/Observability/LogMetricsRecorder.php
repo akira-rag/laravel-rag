@@ -9,9 +9,7 @@ use Psr\Log\LoggerInterface;
 
 final readonly class LogMetricsRecorder implements MetricsRecorder
 {
-    public function __construct(private LoggerInterface|LogContract $logger)
-    {
-    }
+    public function __construct(private LoggerInterface|LogContract $logger) {}
 
     /**
      * @param  array<string,scalar|null>  $tags
@@ -37,4 +35,3 @@ final readonly class LogMetricsRecorder implements MetricsRecorder
         ]);
     }
 }
-

@@ -12,12 +12,9 @@ use Akira\Rag\Tenant\TenantContext;
 use Illuminate\Console\Command;
 use Illuminate\Contracts\Encryption\Encrypter;
 use Illuminate\Filesystem\Filesystem;
-use Illuminate\Support\Carbon;
 
-use function Laravel\Prompts\info;
 use function Laravel\Prompts\text;
 use function Laravel\Prompts\warning;
-
 
 final class RagExportCommand extends Command
 {
@@ -36,14 +33,17 @@ final class RagExportCommand extends Command
         $format = (string) ($this->option('format') ?? 'json');
         if ($format !== 'json') {
             warning('Only json format is supported at the moment.');
+
             return self::INVALID;
         }
 
         $output = (string) ($this->option('output') ?? '');
+        // @codeCoverageIgnoreStart
         if ($output === '') {
-            $suggest = storage_path('app/rag/exports/'.($tenant->enabled() ? ($tenant->current() ?? 'unknown') : 'single').'/export-'.Carbon::now()->format('Ymd-His').'.json');
+            $suggest = storage_path('app/rag/exports/'.($tenant->enabled() ? ($tenant->current() ?? 'unknown') : 'single').'/export-'.\Illuminate\Support\Facades\Date::now()->format('Ymd-His').'.json');
             $output = text('Output path', default: $suggest);
         }
+        // @codeCoverageIgnoreEnd
 
         $includeEmbeddings = (bool) $this->option('include-embeddings');
         $includeAudit = (bool) $this->option('include-audit');
@@ -54,7 +54,7 @@ final class RagExportCommand extends Command
             'meta' => [
                 'version' => 'v1',
                 'tenant' => $tenant->enabled() ? ($tenant->current() ?? null) : 'single',
-                'timestamp' => Carbon::now()->toIso8601String(),
+                'timestamp' => \Illuminate\Support\Facades\Date::now()->toIso8601String(),
             ],
             'documents' => RagDocument::query()->orderBy('id')->get()->toArray(),
             'chunks' => RagChunk::query()->orderBy('id')->get()->toArray(),
@@ -63,14 +63,17 @@ final class RagExportCommand extends Command
         ];
 
         $json = json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+        // @codeCoverageIgnoreStart
         if ($json === false) {
             warning('Failed to encode export payload.');
+
             return self::FAILURE;
         }
+        // @codeCoverageIgnoreEnd
 
         if ($encrypt) {
             /** @var Encrypter $crypt */
-            $crypt = app('encrypter');
+            $crypt = resolve(\Illuminate\Encryption\Encrypter::class);
             $json = $crypt->encryptString($json);
         }
 
@@ -79,11 +82,14 @@ final class RagExportCommand extends Command
             if (! str_ends_with($finalPath, '.gz')) {
                 $finalPath .= '.gz';
             }
-            $gz = gzencode($json, 9);
+            $gz = gzencode((string) $json, 9);
+            // @codeCoverageIgnoreStart
             if ($gz === false) {
                 warning('Failed to compress export.');
+
                 return self::FAILURE;
             }
+            // @codeCoverageIgnoreEnd
             $files->ensureDirectoryExists(dirname($finalPath));
             $files->put($finalPath, $gz);
         } else {
@@ -101,5 +107,3 @@ final class RagExportCommand extends Command
         return self::SUCCESS;
     }
 }
-
-

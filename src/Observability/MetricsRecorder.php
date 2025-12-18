@@ -16,4 +16,3 @@ interface MetricsRecorder
      */
     public function timing(string $metric, float $milliseconds, array $tags = []): void;
 }
-

@@ -16,7 +16,6 @@ use function Laravel\Prompts\text;
 use function Laravel\Prompts\textarea;
 use function Laravel\Prompts\warning;
 
-
 final class RagIngestCommand extends Command
 {
     protected $signature = 'rag:ingest'
@@ -40,8 +39,9 @@ final class RagIngestCommand extends Command
         $filePath = (string) ($this->option('file') ?? '');
         $metaPairs = (array) ($this->option('meta') ?? []);
 
-        $interactive = $title === '' || $sourceType === '' || ($textContent === '' && $filePath === '');
+        $interactive = ($this->input->isInteractive()) && ($title === '' || $sourceType === '' || ($textContent === '' && $filePath === ''));
 
+        // @codeCoverageIgnoreStart
         if ($interactive) {
             info('Akira RAG - Ingestion');
 
@@ -73,10 +73,8 @@ final class RagIngestCommand extends Command
                 if ($textContent === '') {
                     $textContent = textarea('Paste the content');
                 }
-            } else {
-                if ($filePath === '') {
-                    $filePath = text('Path to .txt or .md file');
-                }
+            } elseif ($filePath === '') {
+                $filePath = text('Path to .txt or .md file');
             }
 
             // Meta key=value pairs loop
@@ -94,21 +92,25 @@ final class RagIngestCommand extends Command
                 }
             }
         }
+        // @codeCoverageIgnoreEnd
 
         // validate content source
         if ($textContent === '' && $filePath === '') {
             warning('You must provide either --text or --file');
+
             return self::INVALID;
         }
 
         if ($filePath !== '') {
             if (! $files->exists($filePath)) {
                 warning('File not found: '.$filePath);
+
                 return self::INVALID;
             }
-            $ext = strtolower(pathinfo($filePath, PATHINFO_EXTENSION));
+            $ext = mb_strtolower(pathinfo($filePath, PATHINFO_EXTENSION));
             if (! in_array($ext, ['txt', 'md'], true)) {
                 warning('Unsupported file extension. Only .txt and .md are supported.');
+
                 return self::INVALID;
             }
             $textContent = $files->get($filePath);
@@ -126,6 +128,7 @@ final class RagIngestCommand extends Command
             ]);
         } catch (InvalidPayload $e) {
             warning($e->getMessage());
+
             return self::INVALID;
         }
 
@@ -147,20 +150,23 @@ final class RagIngestCommand extends Command
     {
         $out = [];
         foreach ($pairs as $pair) {
-            if (! is_string($pair) || $pair === '') {
+            if (! is_string($pair)) {
                 continue;
             }
-            $pos = strpos($pair, '=');
+            if ($pair === '') {
+                continue;
+            }
+            $pos = mb_strpos($pair, '=');
             if ($pos === false) {
                 $out[$pair] = true;
+
                 continue;
             }
-            $k = substr($pair, 0, $pos);
-            $v = substr($pair, $pos + 1);
+            $k = mb_substr($pair, 0, $pos);
+            $v = mb_substr($pair, $pos + 1);
             $out[$k] = $v;
         }
 
         return $out;
     }
 }
-

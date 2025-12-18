@@ -5,6 +5,7 @@ declare(strict_types=1);
 use Akira\Rag\Models\RagChunk;
 use Akira\Rag\Models\RagDocument;
 use Tests\Helpers\FakeTenantResolver;
+
 use function Pest\Laravel\artisan;
 
 it('ingests using --text', function (): void {
@@ -41,6 +42,30 @@ it('ingests using --file .txt and parses meta', function (): void {
     $doc = RagDocument::query()->first();
     expect($doc)->not()->toBeNull();
     expect($doc->tenant_id)->toBeNull();
+});
+
+it('fails when file does not exist', function (): void {
+    config()->set('rag.tenancy.enabled', false);
+    $missing = storage_path('app/does-not-exist.md');
+    $code = artisan('rag:ingest', [
+        '--title' => 'Missing',
+        '--source_type' => 'note',
+        '--file' => $missing,
+    ])->run();
+    expect($code)->toBe(2);
+});
+
+it('fails on unsupported file extension', function (): void {
+    config()->set('rag.tenancy.enabled', false);
+    $pdf = storage_path('app/unsupported.pdf');
+    @mkdir(dirname($pdf), 0777, true);
+    file_put_contents($pdf, 'dummy');
+    $code = artisan('rag:ingest', [
+        '--title' => 'Ext',
+        '--source_type' => 'note',
+        '--file' => $pdf,
+    ])->run();
+    expect($code)->toBe(2);
 });
 
 it('is idempotent for same content', function (): void {
@@ -84,7 +109,7 @@ it('isolates data in multi-tenant', function (): void {
     config()->set('rag.tenancy.resolver', FakeTenantResolver::class);
 
     // tenant A
-    app()->bind(FakeTenantResolver::class, fn () => new FakeTenantResolver('tenant-a'));
+    app()->bind(FakeTenantResolver::class, fn (): FakeTenantResolver => new FakeTenantResolver('tenant-a'));
     artisan('rag:ingest', [
         '--title' => 'A',
         '--source_type' => 'note',
@@ -95,7 +120,7 @@ it('isolates data in multi-tenant', function (): void {
     expect($countA)->toBe(1);
 
     // tenant B
-    app()->bind(FakeTenantResolver::class, fn () => new FakeTenantResolver('tenant-b'));
+    app()->bind(FakeTenantResolver::class, fn (): FakeTenantResolver => new FakeTenantResolver('tenant-b'));
     artisan('rag:ingest', [
         '--title' => 'B',
         '--source_type' => 'note',
@@ -104,6 +129,6 @@ it('isolates data in multi-tenant', function (): void {
     ])->assertSuccessful();
 
     // back to tenant A should still only see A
-    app()->bind(FakeTenantResolver::class, fn () => new FakeTenantResolver('tenant-a'));
+    app()->bind(FakeTenantResolver::class, fn (): FakeTenantResolver => new FakeTenantResolver('tenant-a'));
     expect(RagDocument::query()->count())->toBe(1);
 });

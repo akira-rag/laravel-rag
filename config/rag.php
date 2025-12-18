@@ -155,7 +155,7 @@ return [
         ],
         'metrics' => [
             'enabled' => true,
-            'recorder' => \Akira\Rag\Observability\LogMetricsRecorder::class,
+            'recorder' => Akira\Rag\Observability\LogMetricsRecorder::class,
         ],
     ],
 ];
