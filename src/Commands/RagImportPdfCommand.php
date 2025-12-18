@@ -27,9 +27,7 @@ final class RagImportPdfCommand extends Command
 
     public function handle(Filesystem $files): int
     {
-        $pathArg = $this->argument('path');
-        $path = is_string($pathArg) ? $pathArg : '';
-        assert(is_string($path));
+        $path = (string) $this->argument('path');
         if (! $files->exists($path)) {
             warning('Path not found: '.$path);
 
@@ -55,15 +53,12 @@ final class RagImportPdfCommand extends Command
         foreach ($pdfFiles as $pdf) {
             $titleOpt = $this->option('title');
             $title = is_string($titleOpt) ? $titleOpt : $files->name($pdf);
-            assert(is_string($title));
 
             $sourceTypeOpt = $this->option('source_type');
             $sourceType = is_string($sourceTypeOpt) ? $sourceTypeOpt : 'pdf';
-            assert(is_string($sourceType));
 
             $sourceRefOpt = $this->option('source_ref');
             $sourceRef = is_string($sourceRefOpt) ? $sourceRefOpt : $pdf;
-            assert(is_string($sourceRef));
 
             // Minimal PDF text extraction using built-in stream filter (naive)
             $raw = $files->get($pdf);
@@ -79,7 +74,6 @@ final class RagImportPdfCommand extends Command
 
             $langOpt = $this->option('lang');
             $lang = is_string($langOpt) ? $langOpt : 'en';
-            assert(is_string($lang));
 
             Rag::ingest([
                 'title' => $title,
@@ -95,20 +89,6 @@ final class RagImportPdfCommand extends Command
         }
 
         return self::SUCCESS;
-    }
-
-    private function stringOption(string $name, string $default = ''): string
-    {
-        $value = $this->option($name);
-
-        return is_string($value) ? $value : $default;
-    }
-
-    private function stringArgument(string $name, string $default = ''): string
-    {
-        $value = $this->argument($name);
-
-        return is_string($value) ? $value : $default;
     }
 
     private function extractText(string $raw): string

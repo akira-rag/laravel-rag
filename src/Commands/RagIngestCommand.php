@@ -36,23 +36,18 @@ final class RagIngestCommand extends Command
 
         $titleOpt = $this->option('title');
         $title = is_string($titleOpt) ? $titleOpt : '';
-        assert(is_string($title));
 
         $sourceTypeOpt = $this->option('source_type');
         $sourceType = is_string($sourceTypeOpt) ? $sourceTypeOpt : '';
-        assert(is_string($sourceType));
 
         $sourceRefOpt = $this->option('source_ref');
         $sourceRef = is_string($sourceRefOpt) ? $sourceRefOpt : '';
-        assert(is_string($sourceRef));
 
         $textOpt = $this->option('text');
         $textContent = is_string($textOpt) ? $textOpt : '';
-        assert(is_string($textContent));
 
         $fileOpt = $this->option('file');
         $filePath = is_string($fileOpt) ? $fileOpt : '';
-        assert(is_string($filePath));
         /** @var list<string> $metaPairs */
         $metaPairs = array_values(array_filter((array) $this->option('meta'), is_string(...)));
 
@@ -160,13 +155,6 @@ final class RagIngestCommand extends Command
         $this->components->twoColumnDetail('Embedding', $embeddingFlag);
 
         return self::SUCCESS;
-    }
-
-    private function stringOption(string $name, string $default = ''): string
-    {
-        $value = $this->option($name);
-
-        return is_string($value) ? $value : $default;
     }
 
     /**

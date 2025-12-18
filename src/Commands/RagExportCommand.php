@@ -35,7 +35,6 @@ final class RagExportCommand extends Command
 
         $formatOpt = $this->option('format');
         $format = is_string($formatOpt) ? $formatOpt : 'json';
-        assert(is_string($format));
 
         if ($format !== 'json') {
             warning('Only json format is supported at the moment.');
@@ -45,7 +44,6 @@ final class RagExportCommand extends Command
 
         $outputOpt = $this->option('output');
         $output = is_string($outputOpt) ? $outputOpt : '';
-        assert(is_string($output));
         // @codeCoverageIgnoreStart
         if ($output === '') {
             $suggest = storage_path('app/rag/exports/'.($tenant->enabled() ? ($tenant->current() ?? 'unknown')
@@ -114,12 +112,5 @@ final class RagExportCommand extends Command
         $this->components->twoColumnDetail('Output', $finalPath);
 
         return self::SUCCESS;
-    }
-
-    private function stringOption(string $name, string $default = ''): string
-    {
-        $value = $this->option($name);
-
-        return is_string($value) ? $value : $default;
     }
 }
