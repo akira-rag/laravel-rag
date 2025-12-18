@@ -30,15 +30,6 @@ final class RagExportCommand extends Command
 
     protected $description = 'Export the RAG knowledge base for the current tenant';
 
-    /**
-     * @return string
-     */
-    private function stringOption(string $name, string $default = ''): string
-    {
-        $value = $this->option($name);
-        return is_string($value) ? $value : $default;
-    }
-
     public function handle(TenantContext $tenant, Filesystem $files): int
     {
 
@@ -118,5 +109,12 @@ final class RagExportCommand extends Command
         $this->components->twoColumnDetail('Output', $finalPath);
 
         return self::SUCCESS;
+    }
+
+    private function stringOption(string $name, string $default = ''): string
+    {
+        $value = $this->option($name);
+
+        return is_string($value) ? $value : $default;
     }
 }
