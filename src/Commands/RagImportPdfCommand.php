@@ -51,28 +51,32 @@ final class RagImportPdfCommand extends Command
         $sync = (bool) $this->option('sync');
 
         foreach ($pdfFiles as $pdf) {
-            $title = (string) ($this->option('title') ?? $files->name($pdf));
-            $sourceType = (string) ($this->option('source_type') ?? 'pdf');
-            $sourceRef = (string) ($this->option('source_ref') ?? $pdf);
+            $titleOpt = $this->option('title');
+            $title = is_string($titleOpt) ? $titleOpt : $files->name($pdf);
+            $sourceTypeOpt = $this->option('source_type');
+            $sourceType = is_string($sourceTypeOpt) ? $sourceTypeOpt : 'pdf';
+            $sourceRefOpt = $this->option('source_ref');
+            $sourceRef = is_string($sourceRefOpt) ? $sourceRefOpt : $pdf;
 
             // Minimal PDF text extraction using built-in stream filter (naive)
             $raw = $files->get($pdf);
             $textContent = $this->extractText($raw);
 
             if ($dryRun) {
-                $this->components->twoColumnDetail('PDF', $pdf);
+                $this->components->twoColumnDetail('PDF', (string) $pdf);
                 $this->components->twoColumnDetail('Bytes', (string) mb_strlen($raw));
                 $this->components->twoColumnDetail('Extracted (approx chars)', (string) mb_strlen($textContent));
 
                 continue;
             }
 
+            $langOpt = $this->option('lang');
             Rag::ingest([
                 'title' => $title,
                 'source_type' => $sourceType,
                 'source_ref' => $sourceRef,
                 'content' => $textContent,
-                'meta' => ['lang' => (string) $this->option('lang')],
+                'meta' => ['lang' => is_string($langOpt) ? $langOpt : 'en'],
             ]);
         }
 

@@ -34,11 +34,16 @@ final class RagIngestCommand extends Command
     public function handle(Filesystem $files): int
     {
 
-        $title = (string) ($this->option('title') ?? '');
-        $sourceType = (string) ($this->option('source_type') ?? '');
-        $sourceRef = (string) ($this->option('source_ref') ?? '');
-        $textContent = (string) ($this->option('text') ?? '');
-        $filePath = (string) ($this->option('file') ?? '');
+        $titleOpt = $this->option('title');
+        $title = is_string($titleOpt) ? $titleOpt : '';
+        $sourceTypeOpt = $this->option('source_type');
+        $sourceType = is_string($sourceTypeOpt) ? $sourceTypeOpt : '';
+        $sourceRefOpt = $this->option('source_ref');
+        $sourceRef = is_string($sourceRefOpt) ? $sourceRefOpt : '';
+        $textOpt = $this->option('text');
+        $textContent = is_string($textOpt) ? $textOpt : '';
+        $fileOpt = $this->option('file');
+        $filePath = is_string($fileOpt) ? $fileOpt : '';
         /** @var list<string> $metaPairs */
         $metaPairs = array_values(array_filter((array) $this->option('meta'), is_string(...)));
 

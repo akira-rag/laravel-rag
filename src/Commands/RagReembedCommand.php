@@ -24,9 +24,11 @@ final class RagReembedCommand extends Command
 
     public function handle(): int
     {
-        $docId = (string) ($this->option('document_id') ?? '');
+        $docIdOpt = $this->option('document_id');
+        $docId = is_string($docIdOpt) ? $docIdOpt : '';
         $all = (bool) $this->option('all');
-        $model = (string) ($this->option('model') ?? '');
+        $modelOpt = $this->option('model');
+        $model = is_string($modelOpt) ? $modelOpt : '';
 
         if (! $all && $docId === '' && $this->input->isInteractive() && ! app()->runningUnitTests()) {
             // @codeCoverageIgnoreStart
