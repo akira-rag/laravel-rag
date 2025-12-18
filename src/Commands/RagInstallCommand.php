@@ -25,7 +25,6 @@ final class RagInstallCommand extends Command
 
     protected $description = 'Interactive installer for Akira RAG';
 
-    // @codeCoverageIgnoreStart
     public function handle(Filesystem $files): int
     {
         intro('Akira RAG Installer');
@@ -86,7 +85,6 @@ final class RagInstallCommand extends Command
 
         return self::SUCCESS;
     }
-    // @codeCoverageIgnoreEnd
 
     private function openUrl(string $url): void
     {
