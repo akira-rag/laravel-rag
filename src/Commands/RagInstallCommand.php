@@ -118,7 +118,10 @@ final class RagInstallCommand extends Command
 
         $cmd = PHP_OS_FAMILY === 'Darwin' ? 'open' : (PHP_OS_FAMILY === 'Windows' ? 'start' : 'xdg-open');
         try {
-            @pclose(@popen($cmd.' '.escapeshellarg($url), 'r'));
+            $handle = @popen($cmd.' '.escapeshellarg($url), 'r');
+            if (is_resource($handle)) {
+                pclose($handle);
+            }
         } catch (Throwable) {
             // ignore
         }

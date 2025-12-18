@@ -52,6 +52,7 @@ final class RagServiceProvider extends PackageServiceProvider
 
             $recorder = config()->string('rag.observability.metrics.recorder', LogMetricsRecorder::class);
 
+            /** @var MetricsRecorder */
             return new $recorder(
                 $app->make(LoggerInterface::class)
                     ->channel(config()->string('rag.observability.logging.channel', 'rag')),

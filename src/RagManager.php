@@ -118,13 +118,19 @@ final readonly class RagManager
 
         if ($cacheEnabled) {
             $cached = $this->cache->store()->get($cacheKey);
-            if (is_array($cached)) {
+            if (is_array($cached)
+                && isset($cached['answer'], $cached['chunks'], $cached['query_id'])
+                && is_string($cached['answer'])
+                && is_array($cached['chunks'])
+                && is_string($cached['query_id'])) {
+                /** @var array{answer:string,chunks:array<int,array{id:string,score:float}>,query_id:string} */
                 return $cached;
             }
         }
 
         $queryId = (string) Str::uuid();
 
+        /** @var array<int,array{id:string,score:float}> $chunks */
         $chunks = RagChunk::query()
             ->when(isset($filters['document_id']), function (Builder $q) use ($filters): void {
 

@@ -50,7 +50,10 @@ final class RagStatsCommand extends Command
         ];
 
         if ($this->option('json')) {
-            $this->output->writeln(json_encode($payload, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
+            $json = json_encode($payload, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+            if ($json !== false) {
+                $this->output->writeln($json);
+            }
 
             return self::SUCCESS;
         }
