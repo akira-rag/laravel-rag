@@ -40,7 +40,7 @@ final class RagIngestCommand extends Command
         $textContent = (string) ($this->option('text') ?? '');
         $filePath = (string) ($this->option('file') ?? '');
         /** @var list<string> $metaPairs */
-        $metaPairs = array_values(array_filter((array) $this->option('meta'), fn (mixed $v): bool => is_string($v)));
+        $metaPairs = array_values(array_filter((array) $this->option('meta'), is_string(...)));
 
         $interactive = ($this->input->isInteractive())
             && ($title === '' || $sourceType === ''

@@ -60,6 +60,7 @@ final readonly class RagManager
         if ($existing) {
             $key = $existing->getKey();
             assert(is_string($key) || is_int($key));
+
             return ['document_id' => (string) $key, 'chunks' => $existing->chunks()->count()];
         }
 
@@ -130,7 +131,7 @@ final readonly class RagManager
                 && is_array($cached['chunks'])
                 && is_string($cached['query_id'])
             ) {
-                /** @var array{answer:string,chunks:array<int,array{id:string,score:float}>,query_id:string} */
+                /** @var array{answer:string,chunks:array<int,array{id:string,score:float}>,query_id:string} $cached */
                 return $cached;
             }
         }
@@ -176,6 +177,7 @@ final readonly class RagManager
             });
         }
 
+        /** @var array{answer:string,chunks:array<int,array{id:string,score:float}>,query_id:string} $result */
         $result = [
             'answer' => 'Deterministic mock answer',
             'chunks' => $chunks,

@@ -87,17 +87,44 @@ final class RagRestoreCommand extends Command
         /* @codeCoverageIgnoreEnd */
 
         // Transactional restore is application DB concern; here, simple upserts
-        foreach ($data['documents'] ?? [] as $d) {
-            RagDocument::query()->updateOrCreate(['id' => $d['id']], $d);
+        $documents = $data['documents'] ?? [];
+        if (is_array($documents)) {
+            foreach ($documents as $d) {
+                if (is_array($d) && isset($d['id'])) {
+                    /** @var array<string,mixed> $d */
+                    RagDocument::query()->updateOrCreate(['id' => $d['id']], $d);
+                }
+            }
         }
-        foreach ($data['chunks'] ?? [] as $c) {
-            RagChunk::query()->updateOrCreate(['id' => $c['id']], $c);
+
+        $dataChunks = $data['chunks'] ?? [];
+        if (is_array($dataChunks)) {
+            foreach ($dataChunks as $c) {
+                if (is_array($c) && isset($c['id'])) {
+                    /** @var array<string,mixed> $c */
+                    RagChunk::query()->updateOrCreate(['id' => $c['id']], $c);
+                }
+            }
         }
-        foreach ($data['embeddings'] ?? [] as $e) {
-            RagEmbedding::query()->updateOrCreate(['id' => $e['id']], $e);
+
+        $embeddings = $data['embeddings'] ?? [];
+        if (is_array($embeddings)) {
+            foreach ($embeddings as $e) {
+                if (is_array($e) && isset($e['id'])) {
+                    /** @var array<string,mixed> $e */
+                    RagEmbedding::query()->updateOrCreate(['id' => $e['id']], $e);
+                }
+            }
         }
-        foreach ($data['queries'] ?? [] as $q) {
-            RagQuery::query()->updateOrCreate(['id' => $q['id']], $q);
+
+        $dataQueries = $data['queries'] ?? [];
+        if (is_array($dataQueries)) {
+            foreach ($dataQueries as $q) {
+                if (is_array($q) && isset($q['id'])) {
+                    /** @var array<string,mixed> $q */
+                    RagQuery::query()->updateOrCreate(['id' => $q['id']], $q);
+                }
+            }
         }
 
         $this->newLine();

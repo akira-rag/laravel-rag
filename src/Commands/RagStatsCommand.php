@@ -48,7 +48,7 @@ final class RagStatsCommand extends Command
                 'embedding' => $embeddingModel,
             ],
             'hybrid' => [
-                'enabled' => (bool) (isset($hybrid['enabled']) ? $hybrid['enabled'] : false),
+                'enabled' => (bool) ($hybrid['enabled'] ?? false),
                 'semantic_weight' => (float) (isset($hybrid['semantic_weight'])
                 && (is_float($hybrid['semantic_weight'])
                     || is_int($hybrid['semantic_weight'])) ? $hybrid['semantic_weight'] : 0.0),
