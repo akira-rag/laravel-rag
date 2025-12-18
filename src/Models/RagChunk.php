@@ -13,24 +13,35 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 final class RagChunk extends Model
 {
     use HasUuids;
-    use \Illuminate\Database\Eloquent\Factories\HasFactory;
     use ScopesTenant;
 
     protected $table = 'rag_chunks';
 
     protected $guarded = [];
 
-    protected $casts = [
-        'meta' => 'array',
-    ];
+    public function casts(): array
+    {
 
+        return [
+            'meta' => 'array',
+        ];
+    }
+
+    /**
+     * @return BelongsTo<RagDocument, $this>
+     */
     public function document(): BelongsTo
     {
+
         return $this->belongsTo(RagDocument::class, 'document_id');
     }
 
+    /**
+     * @return HasOne<RagEmbedding, $this>
+     */
     public function embedding(): HasOne
     {
+
         return $this->hasOne(RagEmbedding::class, 'chunk_id');
     }
 }

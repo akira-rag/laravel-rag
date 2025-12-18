@@ -12,19 +12,27 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 final class RagEmbedding extends Model
 {
     use HasUuids;
-    use \Illuminate\Database\Eloquent\Factories\HasFactory;
     use ScopesTenant;
 
     protected $table = 'rag_embeddings';
 
     protected $guarded = [];
 
-    protected $casts = [
-        'meta' => 'array',
-    ];
+    public function casts(): array
+    {
 
+        return [
+            'vector' => 'array',
+            'meta' => 'array',
+        ];
+    }
+
+    /**
+     * @return BelongsTo<RagChunk, $this>
+     */
     public function chunk(): BelongsTo
     {
+
         return $this->belongsTo(RagChunk::class, 'chunk_id');
     }
 }

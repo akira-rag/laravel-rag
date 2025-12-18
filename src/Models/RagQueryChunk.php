@@ -12,24 +12,35 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 final class RagQueryChunk extends Model
 {
     use HasUuids;
-    use \Illuminate\Database\Eloquent\Factories\HasFactory;
     use ScopesTenant;
 
     protected $table = 'rag_query_chunks';
 
     protected $guarded = [];
 
-    protected $casts = [
-        'meta' => 'array',
-    ];
+    public function casts(): array
+    {
 
+        return [
+            'meta' => 'array',
+        ];
+    }
+
+    /**
+     * @return BelongsTo<RagQuery, $this>
+     */
     public function ragQuery(): BelongsTo
     {
+
         return $this->belongsTo(RagQuery::class, 'query_id');
     }
 
+    /**
+     * @return BelongsTo<RagChunk, $this>
+     */
     public function chunk(): BelongsTo
     {
+
         return $this->belongsTo(RagChunk::class, 'chunk_id');
     }
 }

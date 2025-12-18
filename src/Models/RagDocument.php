@@ -12,19 +12,26 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 final class RagDocument extends Model
 {
     use HasUuids;
-    use \Illuminate\Database\Eloquent\Factories\HasFactory;
     use ScopesTenant;
 
     protected $table = 'rag_documents';
 
     protected $guarded = [];
 
-    protected $casts = [
-        'meta' => 'array',
-    ];
-
+    /**
+     * @return HasMany<RagChunk, $this>
+     */
     public function chunks(): HasMany
     {
+
         return $this->hasMany(RagChunk::class, 'document_id');
+    }
+
+    protected function casts(): array
+    {
+
+        return [
+            'meta' => 'array',
+        ];
     }
 }

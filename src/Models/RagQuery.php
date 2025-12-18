@@ -12,19 +12,26 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 final class RagQuery extends Model
 {
     use HasUuids;
-    use \Illuminate\Database\Eloquent\Factories\HasFactory;
     use ScopesTenant;
 
     protected $table = 'rag_queries';
 
     protected $guarded = [];
 
-    protected $casts = [
-        'meta' => 'array',
-    ];
-
+    /**
+     * @return HasMany<RagQueryChunk, $this>
+     */
     public function chunks(): HasMany
     {
+
         return $this->hasMany(RagQueryChunk::class, 'query_id');
+    }
+
+    protected function casts(): array
+    {
+
+        return [
+            'meta' => 'array',
+        ];
     }
 }
