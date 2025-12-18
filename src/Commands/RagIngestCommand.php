@@ -35,14 +35,19 @@ final class RagIngestCommand extends Command
     {
 
         $titleOpt = $this->option('title');
+        /** @var string $title */
         $title = is_string($titleOpt) ? $titleOpt : '';
         $sourceTypeOpt = $this->option('source_type');
+        /** @var string $sourceType */
         $sourceType = is_string($sourceTypeOpt) ? $sourceTypeOpt : '';
         $sourceRefOpt = $this->option('source_ref');
+        /** @var string $sourceRef */
         $sourceRef = is_string($sourceRefOpt) ? $sourceRefOpt : '';
         $textOpt = $this->option('text');
+        /** @var string $textContent */
         $textContent = is_string($textOpt) ? $textOpt : '';
         $fileOpt = $this->option('file');
+        /** @var string $filePath */
         $filePath = is_string($fileOpt) ? $fileOpt : '';
         /** @var list<string> $metaPairs */
         $metaPairs = array_values(array_filter((array) $this->option('meta'), is_string(...)));

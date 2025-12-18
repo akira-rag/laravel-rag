@@ -34,6 +34,7 @@ final class RagExportCommand extends Command
     {
 
         $formatOpt = $this->option('format');
+        /** @var string $format */
         $format = is_string($formatOpt) ? $formatOpt : 'json';
         if ($format !== 'json') {
             warning('Only json format is supported at the moment.');
@@ -42,6 +43,7 @@ final class RagExportCommand extends Command
         }
 
         $outputOpt = $this->option('output');
+        /** @var string $output */
         $output = is_string($outputOpt) ? $outputOpt : '';
         // @codeCoverageIgnoreStart
         if ($output === '') {
