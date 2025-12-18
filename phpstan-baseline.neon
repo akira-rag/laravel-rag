@@ -1,0 +1,362 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Parameter \#1 \$path of method Illuminate\\Filesystem\\Filesystem::put\(\) expects string, mixed given\.$#'
+			identifier: argument.type
+			path: src/Commands/RagExportCommand.php
+		-
+			message: '#^Parameter \#1 \$path of method Illuminate\\Filesystem\\Filesystem::exists\(\) expects string, mixed given\.$#'
+			identifier: argument.type
+			path: src/Commands/RagImportPdfCommand.php
+		-
+			message: '#^Parameter \#1 \$directory of method Illuminate\\Filesystem\\Filesystem::isDirectory\(\) expects string, mixed given\.$#'
+			identifier: argument.type
+			path: src/Commands/RagImportPdfCommand.php
+		-
+			message: '#^Parameter \#1 \$directory of method Illuminate\\Filesystem\\Filesystem::files\(\) expects string, mixed given\.$#'
+			identifier: argument.type
+			path: src/Commands/RagImportPdfCommand.php
+		-
+			message: '#^Parameter \#1 \$path of method Illuminate\\Filesystem\\Filesystem::name\(\) expects string, mixed given\.$#'
+			identifier: argument.type
+			path: src/Commands/RagImportPdfCommand.php
+		-
+			message: '#^Parameter \#1 \$path of method Illuminate\\Filesystem\\Filesystem::get\(\) expects string, mixed given\.$#'
+			identifier: argument.type
+			path: src/Commands/RagImportPdfCommand.php
+		-
+			message: '#^Parameter \#1 \$path of method Illuminate\\Filesystem\\Filesystem::exists\(\) expects string, mixed given\.$#'
+			identifier: argument.type
+			path: src/Commands/RagIngestCommand.php
+		-
+			message: '#^Parameter \#1 \$path of method Illuminate\\Filesystem\\Filesystem::get\(\) expects string, mixed given\.$#'
+			identifier: argument.type
+			path: src/Commands/RagIngestCommand.php
+		-
+			message: '#^Parameter \#1 \$path of method Illuminate\\Filesystem\\Filesystem::exists\(\) expects string, mixed given\.$#'
+			identifier: argument.type
+			path: src/Commands/RagRestoreCommand.php
+		-
+			message: '#^Parameter \#1 \$path of method Illuminate\\Filesystem\\Filesystem::get\(\) expects string, mixed given\.$#'
+			identifier: argument.type
+			path: src/Commands/RagRestoreCommand.php
+		-
+			message: '#^Cannot cast array\|bool\|string(\|null)? to string\.$#'
+			identifier: cast.string
+		-
+			message: '#^Cannot cast mixed to string\.$#'
+			identifier: cast.string
+		-
+			message: '#^Parameter \#1 \$haystack of function str_ends_with expects string, mixed given\.$#'
+			identifier: argument.type
+		-
+			message: '#^Binary operation "\.=" between mixed and .* results in an error\.$#'
+			identifier: assignOp.invalid
+		-
+			message: '#^Parameter \#1 \$path of function dirname expects string, mixed given\.$#'
+			identifier: argument.type
+		-
+			message: '#^Binary operation "\." between .* and mixed results in an error\.$#'
+			identifier: binaryOp.invalid
+		-
+			message: '#^Parameter \#2 \$second of method Illuminate\\Console\\View\\Components\\Factory::twoColumnDetail\(\) expects string\|null, mixed given\.$#'
+			identifier: argument.type
+		-
+			message: '#^Parameter \#1 \$path of function pathinfo expects string, mixed given\.$#'
+			identifier: argument.type
+		-
+			message: '#^Parameter \#1 \$pairs of method Akira\\Rag\\Commands\\RagIngestCommand::parseMeta\(\) expects list<string>, array.* given\.$#'
+			identifier: argument.type
+		-
+			message: '#^Call to an undefined method Illuminate\\Contracts\\Encryption\\Encrypter\:\:encryptString\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Commands/RagExportCommand.php
+
+		-
+			message: '#^Cannot cast mixed to string\.$#'
+			identifier: cast.string
+			count: 1
+			path: src/Commands/RagExportCommand.php
+
+		-
+			message: '#^Parameter \#2 \$contents of method Illuminate\\Filesystem\\Filesystem\:\:put\(\) expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Commands/RagExportCommand.php
+
+		-
+			message: '#^Called ''env'' outside of the config directory which returns null when the config is cached, use ''config''\.$#'
+			identifier: larastan.noEnvCallsOutsideOfConfig
+			count: 1
+			path: src/Commands/RagInstallCommand.php
+
+		-
+			message: '#^Parameter \#1 \$handle of function pclose expects resource, resource\|false given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Commands/RagInstallCommand.php
+
+		-
+			message: '#^Argument of an invalid type mixed supplied for foreach, only iterables are supported\.$#'
+			identifier: foreach.nonIterable
+			count: 4
+			path: src/Commands/RagRestoreCommand.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Contracts\\Encryption\\Encrypter\:\:decryptString\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Commands/RagRestoreCommand.php
+
+		-
+			message: '#^Cannot access offset ''id'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 4
+			path: src/Commands/RagRestoreCommand.php
+
+		-
+			message: '#^Cannot cast mixed to string\.$#'
+			identifier: cast.string
+			count: 1
+			path: src/Commands/RagRestoreCommand.php
+
+		-
+			message: '#^Parameter \#2 \$values of method Illuminate\\Database\\Eloquent\\Builder\<Akira\\Rag\\Models\\RagChunk\>\:\:updateOrCreate\(\) expects array\<string, mixed\>, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Commands/RagRestoreCommand.php
+
+		-
+			message: '#^Parameter \#2 \$values of method Illuminate\\Database\\Eloquent\\Builder\<Akira\\Rag\\Models\\RagDocument\>\:\:updateOrCreate\(\) expects array\<string, mixed\>, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Commands/RagRestoreCommand.php
+
+		-
+			message: '#^Parameter \#2 \$values of method Illuminate\\Database\\Eloquent\\Builder\<Akira\\Rag\\Models\\RagEmbedding\>\:\:updateOrCreate\(\) expects array\<string, mixed\>, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Commands/RagRestoreCommand.php
+
+		-
+			message: '#^Parameter \#2 \$values of method Illuminate\\Database\\Eloquent\\Builder\<Akira\\Rag\\Models\\RagQuery\>\:\:updateOrCreate\(\) expects array\<string, mixed\>, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Commands/RagRestoreCommand.php
+
+		-
+			message: '#^Cannot access offset ''ai'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 2
+			path: src/Commands/RagStatsCommand.php
+
+		-
+			message: '#^Cannot access offset ''chat_model'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Commands/RagStatsCommand.php
+
+		-
+			message: '#^Cannot access offset ''embedding_model'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Commands/RagStatsCommand.php
+
+		-
+			message: '#^Cannot access offset ''enabled'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Commands/RagStatsCommand.php
+
+		-
+			message: '#^Cannot access offset ''hybrid'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Commands/RagStatsCommand.php
+
+		-
+			message: '#^Cannot access offset ''keyword_weight'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Commands/RagStatsCommand.php
+
+		-
+			message: '#^Cannot access offset ''retrieval'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Commands/RagStatsCommand.php
+
+		-
+			message: '#^Cannot access offset ''semantic_weight'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Commands/RagStatsCommand.php
+
+		-
+			message: '#^Cannot cast mixed to float\.$#'
+			identifier: cast.double
+			count: 2
+			path: src/Commands/RagStatsCommand.php
+
+		-
+			message: '#^Cannot cast mixed to string\.$#'
+			identifier: cast.string
+			count: 2
+			path: src/Commands/RagStatsCommand.php
+
+		-
+			message: '#^Parameter \#1 \$messages of method Illuminate\\Console\\OutputStyle\:\:writeln\(\) expects iterable\|string, string\|false given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Commands/RagStatsCommand.php
+
+		-
+			message: '#^Class Akira\\Rag\\Facades\\Rag has PHPDoc tag @method for method ask\(\) parameter \#2 \$filters with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Facades/Rag.php
+
+		-
+			message: '#^Class Akira\\Rag\\Facades\\Rag has PHPDoc tag @method for method ingest\(\) parameter \#1 \$payload with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Facades/Rag.php
+
+		-
+			message: '#^Class Akira\\Rag\\Models\\RagChunk uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Models/RagChunk.php
+
+		-
+			message: '#^Method Akira\\Rag\\Models\\RagChunk\:\:document\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Models/RagChunk.php
+
+		-
+			message: '#^Method Akira\\Rag\\Models\\RagChunk\:\:embedding\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\HasOne does not specify its types\: TRelatedModel, TDeclaringModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Models/RagChunk.php
+
+		-
+			message: '#^Class Akira\\Rag\\Models\\RagDocument uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Models/RagDocument.php
+
+		-
+			message: '#^Method Akira\\Rag\\Models\\RagDocument\:\:chunks\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\HasMany does not specify its types\: TRelatedModel, TDeclaringModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Models/RagDocument.php
+
+		-
+			message: '#^Class Akira\\Rag\\Models\\RagEmbedding uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Models/RagEmbedding.php
+
+		-
+			message: '#^Method Akira\\Rag\\Models\\RagEmbedding\:\:chunk\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Models/RagEmbedding.php
+
+		-
+			message: '#^Class Akira\\Rag\\Models\\RagQuery uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Models/RagQuery.php
+
+		-
+			message: '#^Method Akira\\Rag\\Models\\RagQuery\:\:chunks\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\HasMany does not specify its types\: TRelatedModel, TDeclaringModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Models/RagQuery.php
+
+		-
+			message: '#^Class Akira\\Rag\\Models\\RagQueryChunk uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Models/RagQueryChunk.php
+
+		-
+			message: '#^Method Akira\\Rag\\Models\\RagQueryChunk\:\:chunk\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Models/RagQueryChunk.php
+
+		-
+			message: '#^Method Akira\\Rag\\Models\\RagQueryChunk\:\:ragQuery\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Models/RagQueryChunk.php
+
+		-
+			message: '#^Call to method info\(\) on an unknown class Illuminate\\Contracts\\Logging\\Log\.$#'
+			identifier: class.notFound
+			count: 2
+			path: src/Observability/LogMetricsRecorder.php
+
+		-
+			message: '#^Parameter \$logger of method Akira\\Rag\\Observability\\LogMetricsRecorder\:\:__construct\(\) has invalid type Illuminate\\Contracts\\Logging\\Log\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Observability/LogMetricsRecorder.php
+
+		-
+			message: '#^Property Akira\\Rag\\Observability\\LogMetricsRecorder\:\:\$logger has unknown class Illuminate\\Contracts\\Logging\\Log as its type\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Observability/LogMetricsRecorder.php
+
+		-
+			message: '#^Binary operation "\." between mixed and ''\|'' results in an error\.$#'
+			identifier: binaryOp.invalid
+			count: 1
+			path: src/RagManager.php
+
+		-
+			message: '#^Binary operation "\." between non\-falsy\-string and mixed results in an error\.$#'
+			identifier: binaryOp.invalid
+			count: 1
+			path: src/RagManager.php
+
+		-
+			message: '#^Cannot cast mixed to string\.$#'
+			identifier: cast.string
+			count: 3
+			path: src/RagManager.php
+
+		-
+			message: '#^Method Akira\\Rag\\RagManager\:\:ask\(\) should return array\{answer\: string, chunks\: array\<int, array\{id\: string, score\: float\}\>, query_id\: string\} but returns array\<mixed, mixed\>\.$#'
+			identifier: return.type
+			count: 1
+			path: src/RagManager.php
+
+		-
+			message: '#^Parameter \#1 \$content of method Akira\\Rag\\RagManager\:\:chunk\(\) expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 2
+			path: src/RagManager.php
+
+		-
+			message: '#^Anonymous function should return Akira\\Rag\\Observability\\MetricsRecorder but returns object\.$#'
+			identifier: return.type
+			count: 1
+			path: src/RagServiceProvider.php
+
+		-
+			message: '#^Parameter \#1 \$channel of method Illuminate\\Log\\LogManager\:\:channel\(\) expects string\|null, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/RagServiceProvider.php
+
+		-
+			message: '#^Function rag\(\) should return object but returns mixed\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Support/helpers.php
