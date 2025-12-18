@@ -41,9 +41,9 @@ return new class extends Migration
         });
 
         if (Schema::getConnection()->getDriverName() === 'pgsql') {
-            DB::statement("ALTER TABLE rag_chunks DROP COLUMN content_tsvector");
+            DB::statement('ALTER TABLE rag_chunks DROP COLUMN content_tsvector');
             DB::statement("ALTER TABLE rag_chunks ADD COLUMN content_tsvector tsvector GENERATED ALWAYS AS (to_tsvector('simple', content)) STORED");
-            DB::statement("CREATE INDEX rag_chunks_content_tsvector_idx ON rag_chunks USING GIN (content_tsvector)");
+            DB::statement('CREATE INDEX rag_chunks_content_tsvector_idx ON rag_chunks USING GIN (content_tsvector)');
         }
 
         // rag_embeddings
@@ -92,4 +92,3 @@ return new class extends Migration
         });
     }
 };
-

@@ -23,7 +23,7 @@ final readonly class TenantContext
 
     public function resolver(): TenantResolver
     {
-        $class =  $this->config->string('rag.tenancy.resolver', NullTenantResolver::class);
+        $class = $this->config->string('rag.tenancy.resolver', NullTenantResolver::class);
 
         $resolver = resolve($class);
 
