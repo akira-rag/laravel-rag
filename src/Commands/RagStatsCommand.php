@@ -61,7 +61,7 @@ final class RagStatsCommand extends Command
         $this->components->twoColumnDetail('Embeddings', (string) $payload['embeddings']);
         $this->components->twoColumnDetail('KB Version', $payload['kbVersion']);
         $this->components->twoColumnDetail('Tenancy', $payload['tenancy']);
-        $this->components->twoColumnDetail('Tenant ID', is_string($payload['tenantId']) ? $payload['tenantId'] : $payload['tenantId'] ?? 'null');
+        $this->components->twoColumnDetail('Tenant ID', is_string($payload['tenantId']) ? $payload['tenantId'] : 'null');
         $this->components->twoColumnDetail('Chat Model', $payload['models']['chat']);
         $this->components->twoColumnDetail('Embedding Model', $payload['models']['embedding']);
         $this->components->twoColumnDetail('Hybrid', $payload['hybrid']['enabled'] ? 'enabled' : 'disabled');

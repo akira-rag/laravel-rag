@@ -39,7 +39,7 @@ final class RagIngestCommand extends Command
         $sourceRef = (string) ($this->option('source_ref') ?? '');
         $textContent = (string) ($this->option('text') ?? '');
         $filePath = (string) ($this->option('file') ?? '');
-        $metaPairs = (array) ($this->option('meta') ?? []);
+        $metaPairs = (array) $this->option('meta');
 
         $interactive = ($this->input->isInteractive())
             && ($title === '' || $sourceType === ''

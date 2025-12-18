@@ -29,6 +29,8 @@ final readonly class RagManager
     /**
      * @param  array<string,mixed>  $payload
      * @return array{document_id:string, chunks:int}
+     *
+     * @throws InvalidPayload
      */
     public function ingest(array $payload): array
     {

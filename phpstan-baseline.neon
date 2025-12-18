@@ -86,12 +86,6 @@ parameters:
 			path: src/Commands/RagExportCommand.php
 
 		-
-			message: '#^Dead catch \- Akira\\Rag\\Exceptions\\InvalidPayload is never thrown in the try block\.$#'
-			identifier: catch.neverThrown
-			count: 1
-			path: src/Commands/RagIngestCommand.php
-
-		-
 			message: '#^Called ''env'' outside of the config directory which returns null when the config is cached, use ''config''\.$#'
 			identifier: larastan.noEnvCallsOutsideOfConfig
 			count: 1
