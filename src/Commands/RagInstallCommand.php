@@ -17,10 +17,15 @@ use function Laravel\Prompts\warning;
 
 final class RagInstallCommand extends Command
 {
-    protected $signature = 'rag:install {--force : Run without prompts (non-interactive)}';
+    protected $signature = 'rag:install'
+        . ' {--force : Run without prompts (non-interactive)}'
+        . ' {--with-tenancy : Enable multi-tenant mode when running with --force}'
+        . ' {--run-migrate : Run database migrations when running with --force}'
+        . ' {--star : Open the GitHub repository to leave a star when running with --force}';
 
     protected $description = 'Interactive installer for Akira RAG';
 
+    // @codeCoverageIgnoreStart
     public function handle(Filesystem $files): int
     {
         intro('Akira RAG Installer');
@@ -46,7 +51,7 @@ final class RagInstallCommand extends Command
             }
         }
 
-        $runMigrate = !$nonInteractive && confirm('Run database migrations now?', false);
+        $runMigrate = $nonInteractive ? (bool) $this->option('run-migrate') : confirm('Run database migrations now?', false);
         if ($runMigrate) {
             if ($dryRun) {
                 info('Skipping migrate in testing environment.');
@@ -55,7 +60,7 @@ final class RagInstallCommand extends Command
             }
         }
 
-        $enableTenancy = !$nonInteractive && confirm('Enable multi-tenant mode (tenancy.enabled = true)?', false);
+        $enableTenancy = $nonInteractive ? (bool) $this->option('with-tenancy') : confirm('Enable multi-tenant mode (tenancy.enabled = true)?', false);
         if ($enableTenancy) {
             $path = config_path('rag.php');
             if (! $files->exists($path)) {
@@ -71,7 +76,7 @@ final class RagInstallCommand extends Command
         note('If you find this useful, please consider starring the repo:');
         info('https://github.com/akira-rag/laravel-rag');
 
-        $star = $nonInteractive ? false : confirm('Open the GitHub repository now to leave a star?', false);
+        $star = $nonInteractive ? (bool) $this->option('star') : confirm('Open the GitHub repository now to leave a star?', false);
         if ($star && ! $dryRun) {
             $url = 'https://github.com/akira-rag/laravel-rag';
             $this->openUrl($url);
@@ -81,6 +86,7 @@ final class RagInstallCommand extends Command
 
         return self::SUCCESS;
     }
+    // @codeCoverageIgnoreEnd
 
     private function openUrl(string $url): void
     {
