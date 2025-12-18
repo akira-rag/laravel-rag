@@ -15,6 +15,7 @@ use Akira\Rag\Commands\RagStatsCommand;
 use Akira\Rag\Observability\MetricsRecorder;
 use Akira\Rag\Tenant\TenantContext;
 use Illuminate\Foundation\Application;
+use Psr\Log\LoggerInterface;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 
@@ -46,7 +47,7 @@ final class RagServiceProvider extends PackageServiceProvider
         $this->app->bind(function (Application $app): MetricsRecorder {
             $recorder = config('rag.observability.metrics.recorder');
 
-            return new $recorder($app->make('log')
+            return new $recorder($app->make(LoggerInterface::class)
                 ->channel(config('rag.observability.logging.channel', 'rag')));
         });
     }

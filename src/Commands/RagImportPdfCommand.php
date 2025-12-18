@@ -7,6 +7,7 @@ namespace Akira\Rag\Commands;
 use Akira\Rag\Facades\Rag;
 use Illuminate\Console\Command;
 use Illuminate\Filesystem\Filesystem;
+use Symfony\Component\Finder\SplFileInfo;
 
 use function Laravel\Prompts\text;
 use function Laravel\Prompts\warning;
@@ -34,7 +35,11 @@ final class RagImportPdfCommand extends Command
         }
 
         $isDir = $files->isDirectory($path);
-        $pdfFiles = $isDir ? collect($files->files($path))->filter(fn ($f): bool => mb_strtolower($files->extension($f->getPathname())) === 'pdf')->map->getPathname()->values()->all() : [$path];
+        $pdfFiles = $isDir ? collect($files->files($path))
+            ->filter(fn (SplFileInfo $f): bool => mb_strtolower($files->extension($f->getPathname())) === 'pdf')
+            ->map->getPathname()
+            ->values()
+            ->all() : [$path];
 
         if ($pdfFiles === []) {
             warning('No PDF files found.');

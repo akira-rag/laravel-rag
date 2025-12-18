@@ -7,6 +7,7 @@ namespace Akira\Rag\Commands;
 use Akira\Rag\Tenant\TenantContext;
 use Illuminate\Console\Command;
 use Illuminate\Filesystem\Filesystem;
+use Symfony\Component\Finder\SplFileInfo;
 
 final class RagBackupCommand extends Command
 {
@@ -39,12 +40,12 @@ final class RagBackupCommand extends Command
         // prune old backups
         $files->ensureDirectoryExists(dirname($output));
         $filesList = collect($files->files(dirname($output)))
-            ->filter(fn ($f): bool => str_starts_with($files->name($f->getPathname()), 'backup-'))
-            ->sortByDesc(fn ($f) => $files->lastModified($f->getPathname()))
+            ->filter(fn (SplFileInfo $f): bool => str_starts_with($files->name($f->getPathname()), 'backup-'))
+            ->sortByDesc(fn (SplFileInfo $f): int => $files->lastModified($f->getPathname()))
             ->values();
 
         if ($filesList->count() > $retain) {
-            $filesList->slice($retain)->each(fn ($f) => $files->delete($f->getPathname()));
+            $filesList->slice($retain)->each(fn (SplFileInfo $f) => $files->delete($f->getPathname()));
         }
 
         $this->newLine();

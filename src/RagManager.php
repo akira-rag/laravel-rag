@@ -14,6 +14,7 @@ use Akira\Rag\Tenant\TenantContext;
 use Illuminate\Contracts\Cache\Factory as CacheFactory;
 use Illuminate\Contracts\Config\Repository as Config;
 use Illuminate\Database\ConnectionInterface;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Str;
 
 final readonly class RagManager
@@ -118,13 +119,13 @@ final readonly class RagManager
         $queryId = (string) Str::uuid();
 
         $chunks = RagChunk::query()
-            ->when(isset($filters['document_id']), function ($q) use ($filters): void {
+            ->when(isset($filters['document_id']), function (Builder $q) use ($filters): void {
                 $q->where('document_id', $filters['document_id']);
             })
             ->orderBy('position')
             ->limit($this->config->integer('rag.retrieval.top_k', 5))
             ->get(['id', 'position'])
-            ->map(fn ($c): array => ['id' => (string) $c->id, 'score' => 1.0])
+            ->map(fn (RagChunk $c): array => ['id' => (string) $c->id, 'score' => 1.0])
             ->values()
             ->all();
 
