@@ -8,7 +8,13 @@ use Akira\Rag\Commands\RagInstallCommand;
 use Akira\Rag\Commands\RagIngestCommand;
 use Akira\Rag\Commands\RagReembedCommand;
 use Akira\Rag\Commands\RagStatsCommand;
+use Akira\Rag\Commands\RagExportCommand;
+use Akira\Rag\Commands\RagBackupCommand;
+use Akira\Rag\Commands\RagRestoreCommand;
+use Akira\Rag\Commands\RagImportPdfCommand;
 use Akira\Rag\Tenant\TenantContext;
+use Akira\Rag\Observability\MetricsRecorder;
+use Akira\Rag\Observability\LogMetricsRecorder;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 
@@ -25,6 +31,10 @@ final class RagServiceProvider extends PackageServiceProvider
                 RagIngestCommand::class,
                 RagReembedCommand::class,
                 RagStatsCommand::class,
+                RagExportCommand::class,
+                RagBackupCommand::class,
+                RagRestoreCommand::class,
+                RagImportPdfCommand::class,
             ]);
     }
 
@@ -33,5 +43,9 @@ final class RagServiceProvider extends PackageServiceProvider
         $this->app->singleton(TenantContext::class);
         $this->app->singleton(RagManager::class);
         $this->app->singleton('akira.rag', fn ($app): RagService => new RagService($app->make(RagManager::class)));
+        $this->app->bind(MetricsRecorder::class, function ($app): MetricsRecorder {
+            $recorder = config('rag.observability.metrics.recorder');
+            return new $recorder($app->make('log')->channel(config('rag.observability.logging.channel', 'rag')));
+        });
     }
 }
