@@ -14,6 +14,7 @@ final readonly class RagService
      */
     public function ingest(array $payload): array
     {
+
         return $this->manager->ingest($payload);
     }
 
@@ -23,6 +24,7 @@ final readonly class RagService
      */
     public function ask(string $question, array $filters = []): array
     {
+
         return $this->manager->ask($question, $filters);
     }
 }

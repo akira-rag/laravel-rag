@@ -9,7 +9,7 @@ use Akira\Rag\Models\RagDocument;
 use Akira\Rag\Models\RagEmbedding;
 use Akira\Rag\Models\RagQuery;
 use Illuminate\Console\Command;
-use Illuminate\Contracts\Encryption\Encrypter;
+use Illuminate\Encryption\Encrypter;
 use Illuminate\Filesystem\Filesystem;
 use Throwable;
 
@@ -18,7 +18,8 @@ use function Laravel\Prompts\warning;
 
 final class RagRestoreCommand extends Command
 {
-    protected $signature = 'rag:restore'
+    protected $signature
+        = 'rag:restore'
         .' {path : Path to backup archive}'
         .' {--force : Skip confirmation prompt}'
         .' {--dry-run : Validate backup without restoring}'
@@ -28,6 +29,7 @@ final class RagRestoreCommand extends Command
 
     public function handle(Filesystem $files): int
     {
+
         $path = (string) $this->argument('path');
         if (! $files->exists($path)) {
             warning('Backup not found: '.$path);
@@ -45,7 +47,7 @@ final class RagRestoreCommand extends Command
 
         if ($this->option('decrypt')) {
             /** @var Encrypter $crypt */
-            $crypt = resolve(\Illuminate\Encryption\Encrypter::class);
+            $crypt = resolve(Encrypter::class);
             try {
                 $content = $crypt->decryptString($content);
             } catch (Throwable) {
@@ -77,7 +79,9 @@ final class RagRestoreCommand extends Command
         }
 
         /* @codeCoverageIgnoreStart */
-        if (! $this->option('force') && ! confirm('Proceed with restore? Existing data will be preserved where possible.', false)) {
+        if (! $this->option('force')
+            && ! confirm('Proceed with restore? Existing data will be preserved where possible.', false)
+        ) {
             return self::INVALID;
         }
         /* @codeCoverageIgnoreEnd */

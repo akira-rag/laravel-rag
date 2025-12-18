@@ -17,7 +17,8 @@ use function Laravel\Prompts\warning;
 
 final class RagInstallCommand extends Command
 {
-    protected $signature = 'rag:install'
+    protected $signature
+        = 'rag:install'
         .' {--force : Run without prompts (non-interactive)}'
         .' {--with-tenancy : Enable multi-tenant mode when running with --force}'
         .' {--run-migrate : Run database migrations when running with --force}'
@@ -27,39 +28,44 @@ final class RagInstallCommand extends Command
 
     public function handle(Filesystem $files): int
     {
+
         intro('Akira RAG Installer');
 
         $nonInteractive = (bool) $this->option('force');
-        $dryRun = (bool) env('RAG_INSTALL_DRY_RUN', app()->environment('testing'));
 
-        $publishConfig = $nonInteractive || (
-            // @codeCoverageIgnoreStart
+        $dryRun = (bool) app()->environment('testing');
 
-            fn (): bool => confirm('Publish configuration file?'))(); // @codeCoverageIgnoreEnd
+        $publishConfig = $nonInteractive || (fn (): bool => confirm('Publish configuration file?'))();
+
         if ($publishConfig) {
             if ($dryRun) {
                 info('Skipping config publish in testing environment.');
             } else {
-                spin(fn (): bool => $this->callSilent('vendor:publish', ['--tag' => 'laravel-rag-config']) === 0, 'Publishing config...');
+                spin(fn (): bool => $this->callSilent('vendor:publish', ['--tag' => 'laravel-rag-config']) === 0,
+                    'Publishing config...');
             }
         }
 
-        $publishMigrations = $nonInteractive || (
-            // @codeCoverageIgnoreStart
+        $publishMigrations = $nonInteractive
+            || (
+                // @codeCoverageIgnoreStart
 
-            fn (): bool => confirm('Publish migrations?'))(); // @codeCoverageIgnoreEnd
+                fn (): bool => confirm('Publish migrations?'))(); // @codeCoverageIgnoreEnd
         if ($publishMigrations) {
             if ($dryRun) {
                 info('Skipping migrations publish in testing environment.');
             } else {
-                spin(fn (): bool => $this->callSilent('vendor:publish', ['--tag' => 'laravel-rag-migrations']) === 0, 'Publishing migrations...');
+                spin(fn (): bool => $this->callSilent('vendor:publish', ['--tag' => 'laravel-rag-migrations']) === 0,
+                    'Publishing migrations...');
             }
         }
 
-        $runMigrate = $nonInteractive ? (bool) $this->option('run-migrate') : (
-            // @codeCoverageIgnoreStart
+        $runMigrate = $nonInteractive
+            ? (bool) $this->option('run-migrate')
+            : (
+                // @codeCoverageIgnoreStart
 
-            fn (): bool => confirm('Run database migrations now?', false))(); // @codeCoverageIgnoreEnd
+                fn (): bool => confirm('Run database migrations now?', false))(); // @codeCoverageIgnoreEnd
         if ($runMigrate) {
             if ($dryRun) {
                 info('Skipping migrate in testing environment.');
@@ -68,10 +74,13 @@ final class RagInstallCommand extends Command
             }
         }
 
-        $enableTenancy = $nonInteractive ? (bool) $this->option('with-tenancy') : (
-            // @codeCoverageIgnoreStart
+        $enableTenancy = $nonInteractive
+            ? (bool) $this->option('with-tenancy')
+            : (
+                // @codeCoverageIgnoreStart
 
-            fn (): bool => confirm('Enable multi-tenant mode (tenancy.enabled = true)?', false))(); // @codeCoverageIgnoreEnd
+                fn (): bool => confirm('Enable multi-tenant mode (tenancy.enabled = true)?',
+                    false))(); // @codeCoverageIgnoreEnd
         if ($enableTenancy) {
             $path = config_path('rag.php');
             if (! $files->exists($path)) {
@@ -87,10 +96,13 @@ final class RagInstallCommand extends Command
         note('If you find this useful, please consider starring the repo:');
         info('https://github.com/akira-rag/laravel-rag');
 
-        $star = $nonInteractive ? (bool) $this->option('star') : (
-            // @codeCoverageIgnoreStart
+        $star = $nonInteractive
+            ? (bool) $this->option('star')
+            : (
+                // @codeCoverageIgnoreStart
 
-            fn (): bool => confirm('Open the GitHub repository now to leave a star?', false))(); // @codeCoverageIgnoreEnd
+                fn (): bool => confirm('Open the GitHub repository now to leave a star?',
+                    false))(); // @codeCoverageIgnoreEnd
         if ($star && ! $dryRun) {
             $url = 'https://github.com/akira-rag/laravel-rag';
             $this->openUrl($url);
@@ -103,6 +115,7 @@ final class RagInstallCommand extends Command
 
     private function openUrl(string $url): void
     {
+
         $cmd = PHP_OS_FAMILY === 'Darwin' ? 'open' : (PHP_OS_FAMILY === 'Windows' ? 'start' : 'xdg-open');
         try {
             @pclose(@popen($cmd.' '.escapeshellarg($url), 'r'));

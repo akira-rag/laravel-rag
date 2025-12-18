@@ -18,7 +18,8 @@ use function Laravel\Prompts\warning;
 
 final class RagIngestCommand extends Command
 {
-    protected $signature = 'rag:ingest'
+    protected $signature
+        = 'rag:ingest'
         .' {--title=}'
         .' {--source_type=}'
         .' {--source_ref=}'
@@ -32,6 +33,7 @@ final class RagIngestCommand extends Command
 
     public function handle(Filesystem $files): int
     {
+
         $title = (string) ($this->option('title') ?? '');
         $sourceType = (string) ($this->option('source_type') ?? '');
         $sourceRef = (string) ($this->option('source_ref') ?? '');
@@ -39,7 +41,10 @@ final class RagIngestCommand extends Command
         $filePath = (string) ($this->option('file') ?? '');
         $metaPairs = (array) ($this->option('meta') ?? []);
 
-        $interactive = ($this->input->isInteractive()) && ($title === '' || $sourceType === '' || ($textContent === '' && $filePath === ''));
+        $interactive = ($this->input->isInteractive())
+            && ($title === '' || $sourceType === ''
+                || ($textContent === ''
+                    && $filePath === ''));
 
         // @codeCoverageIgnoreStart
         if ($interactive) {
@@ -148,11 +153,9 @@ final class RagIngestCommand extends Command
      */
     private function parseMeta(array $pairs): array
     {
+
         $out = [];
         foreach ($pairs as $pair) {
-            if (! is_string($pair)) {
-                continue;
-            }
             if ($pair === '') {
                 continue;
             }

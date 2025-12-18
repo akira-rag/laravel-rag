@@ -12,6 +12,7 @@ use Akira\Rag\Commands\RagInstallCommand;
 use Akira\Rag\Commands\RagReembedCommand;
 use Akira\Rag\Commands\RagRestoreCommand;
 use Akira\Rag\Commands\RagStatsCommand;
+use Akira\Rag\Observability\LogMetricsRecorder;
 use Akira\Rag\Observability\MetricsRecorder;
 use Akira\Rag\Tenant\TenantContext;
 use Illuminate\Foundation\Application;
@@ -23,6 +24,7 @@ final class RagServiceProvider extends PackageServiceProvider
 {
     public function configurePackage(Package $package): void
     {
+
         $package
             ->name('laravel-rag')
             ->hasConfigFile('rag')
@@ -41,14 +43,19 @@ final class RagServiceProvider extends PackageServiceProvider
 
     public function packageRegistered(): void
     {
+
         $this->app->singleton(TenantContext::class);
         $this->app->singleton(RagManager::class);
-        $this->app->singleton('akira.rag', fn (Application $app): RagService => new RagService($app->make(RagManager::class)));
+        $this->app->singleton('akira.rag',
+            fn (Application $app): RagService => new RagService($app->make(RagManager::class)));
         $this->app->bind(function (Application $app): MetricsRecorder {
-            $recorder = config('rag.observability.metrics.recorder');
 
-            return new $recorder($app->make(LoggerInterface::class)
-                ->channel(config('rag.observability.logging.channel', 'rag')));
+            $recorder = config()->string('rag.observability.metrics.recorder', LogMetricsRecorder::class);
+
+            return new $recorder(
+                $app->make(LoggerInterface::class)
+                    ->channel(config()->string('rag.observability.logging.channel', 'rag')),
+            );
         });
     }
 }

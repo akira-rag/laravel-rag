@@ -10,15 +10,17 @@ use Akira\Rag\Models\RagEmbedding;
 use Akira\Rag\Models\RagQuery;
 use Akira\Rag\Tenant\TenantContext;
 use Illuminate\Console\Command;
-use Illuminate\Contracts\Encryption\Encrypter;
+use Illuminate\Encryption\Encrypter;
 use Illuminate\Filesystem\Filesystem;
+use Illuminate\Support\Facades\Date;
 
 use function Laravel\Prompts\text;
 use function Laravel\Prompts\warning;
 
 final class RagExportCommand extends Command
 {
-    protected $signature = 'rag:export'
+    protected $signature
+        = 'rag:export'
         .' {--format=json}'
         .' {--output=}'
         .' {--include-embeddings}'
@@ -30,6 +32,7 @@ final class RagExportCommand extends Command
 
     public function handle(TenantContext $tenant, Filesystem $files): int
     {
+
         $format = (string) ($this->option('format') ?? 'json');
         if ($format !== 'json') {
             warning('Only json format is supported at the moment.');
@@ -40,7 +43,8 @@ final class RagExportCommand extends Command
         $output = (string) ($this->option('output') ?? '');
         // @codeCoverageIgnoreStart
         if ($output === '') {
-            $suggest = storage_path('app/rag/exports/'.($tenant->enabled() ? ($tenant->current() ?? 'unknown') : 'single').'/export-'.\Illuminate\Support\Facades\Date::now()->format('Ymd-His').'.json');
+            $suggest = storage_path('app/rag/exports/'.($tenant->enabled() ? ($tenant->current() ?? 'unknown')
+                    : 'single').'/export-'.Date::now()->format('Ymd-His').'.json');
             $output = text('Output path', default: $suggest);
         }
         // @codeCoverageIgnoreEnd
@@ -54,7 +58,7 @@ final class RagExportCommand extends Command
             'meta' => [
                 'version' => 'v1',
                 'tenant' => $tenant->enabled() ? ($tenant->current() ?? null) : 'single',
-                'timestamp' => \Illuminate\Support\Facades\Date::now()->toIso8601String(),
+                'timestamp' => Date::now()->toIso8601String(),
             ],
             'documents' => RagDocument::query()->orderBy('id')->get()->toArray(),
             'chunks' => RagChunk::query()->orderBy('id')->get()->toArray(),
@@ -73,7 +77,7 @@ final class RagExportCommand extends Command
 
         if ($encrypt) {
             /** @var Encrypter $crypt */
-            $crypt = resolve(\Illuminate\Encryption\Encrypter::class);
+            $crypt = resolve(Encrypter::class);
             $json = $crypt->encryptString($json);
         }
 

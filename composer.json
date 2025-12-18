@@ -19,7 +19,8 @@
         "php": "^8.4",
         "illuminate/contracts": "^12.0",
         "spatie/laravel-package-tools": "^1.16",
-        "spatie/laravel-data": "^4.6"
+        "spatie/laravel-data": "^4.6",
+        "ext-zlib": "*"
     },
     "require-dev": {
         "akira/setup": "^1.2",

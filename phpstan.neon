@@ -1,10 +1,5 @@
-includes:
-    - phpstan-baseline.neon
-
 parameters:
-    level: max
-    treatPhpDocTypesAsCertain: false
-    reportUnmatchedIgnoredErrors: false
+    level: 5
     paths:
         - src
         - database

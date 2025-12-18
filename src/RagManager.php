@@ -32,15 +32,18 @@ final readonly class RagManager
      */
     public function ingest(array $payload): array
     {
+
         foreach (['title', 'source_type', 'source_ref', 'content'] as $key) {
-            throw_if(! isset($payload[$key]) || ! is_string($payload[$key]) || $payload[$key] === '', InvalidPayload::class, 'Missing or invalid field: '.$key);
+            throw_if(! isset($payload[$key]) || ! is_string($payload[$key]) || $payload[$key] === '',
+                InvalidPayload::class, 'Missing or invalid field: '.$key);
         }
 
         throw_if(array_key_exists('tenant_id', $payload), InvalidPayload::class, 'tenant_id is not allowed in payload');
 
         $meta = is_array($payload['meta'] ?? null) ? $payload['meta'] : [];
 
-        $hash = hash('sha256', $payload['source_type'].'|'.$payload['source_ref'].'|'.hash('sha256', (string) $payload['content']));
+        $hash = hash('sha256',
+            $payload['source_type'].'|'.$payload['source_ref'].'|'.hash('sha256', (string) $payload['content']));
 
         $tenantId = $this->tenant->current();
         $tenantColumn = $this->tenant->column();
@@ -55,6 +58,7 @@ final readonly class RagManager
         $docId = (string) Str::uuid();
 
         $this->db->transaction(function () use ($payload, $meta, $hash, $tenantId, $tenantColumn, $docId): void {
+
             $document = RagDocument::query()->create([
                 'id' => $docId,
                 'title' => $payload['title'],
@@ -96,6 +100,7 @@ final readonly class RagManager
      */
     public function ask(string $question, array $filters = []): array
     {
+
         throw_if($question === '', InvalidPayload::class, 'Question must be non-empty');
 
         $tenantId = $this->tenant->current();
@@ -120,6 +125,7 @@ final readonly class RagManager
 
         $chunks = RagChunk::query()
             ->when(isset($filters['document_id']), function (Builder $q) use ($filters): void {
+
                 $q->where('document_id', $filters['document_id']);
             })
             ->orderBy('position')
@@ -133,6 +139,7 @@ final readonly class RagManager
 
         if ($auditEnabled) {
             $this->db->transaction(function () use ($queryId, $question, $tenantId, $tenantColumn, $chunks): void {
+
                 RagQuery::query()->create([
                     'id' => $queryId,
                     'question' => $question,
@@ -173,6 +180,7 @@ final readonly class RagManager
      */
     public function chunk(string $content): array
     {
+
         $target = $this->config->integer('rag.chunking.target_tokens', 800);
         $overlap = $this->config->integer('rag.chunking.overlap_tokens', 120);
 

@@ -5,7 +5,6 @@ declare(strict_types=1);
 use function Pest\Laravel\artisan;
 
 it('enables tenancy flag update when config exists', function (): void {
-    putenv('RAG_INSTALL_DRY_RUN=1');
 
     $cfg = config_path('rag.php');
     @mkdir(dirname($cfg), 0777, true);
@@ -18,6 +17,7 @@ it('enables tenancy flag update when config exists', function (): void {
 });
 
 it('runs rag:install non-interactively and is idempotent', function (): void {
+
     putenv('RAG_INSTALL_DRY_RUN=1');
 
     artisan('rag:install --force --run-migrate')
