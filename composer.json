@@ -52,7 +52,8 @@
     "autoload-dev": {
         "psr-4": {
             "Akira\\Rag\\Tests\\": "tests/",
-            "Workbench\\App\\": "workbench/app/"
+            "Workbench\\App\\": "workbench/app/",
+            "Tests\\Support\\": "tests/Support/"
         }
     },
     "scripts": {
