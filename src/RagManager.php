@@ -44,8 +44,12 @@ final readonly class RagManager
 
         $meta = is_array($payload['meta'] ?? null) ? $payload['meta'] : [];
 
+        assert(is_string($payload['source_type']));
+        assert(is_string($payload['source_ref']));
+        assert(is_string($payload['content']));
+
         $hash = hash('sha256',
-            $payload['source_type'].'|'.$payload['source_ref'].'|'.hash('sha256', (string) $payload['content']));
+            $payload['source_type'].'|'.$payload['source_ref'].'|'.hash('sha256', $payload['content']));
 
         $tenantId = $this->tenant->current();
         $tenantColumn = $this->tenant->column();
@@ -54,7 +58,9 @@ final readonly class RagManager
             ->where('hash', $hash)
             ->first();
         if ($existing) {
-            return ['document_id' => (string) $existing->getKey(), 'chunks' => $existing->chunks()->count()];
+            $key = $existing->getKey();
+            assert(is_string($key) || is_int($key));
+            return ['document_id' => (string) $key, 'chunks' => $existing->chunks()->count()];
         }
 
         $docId = (string) Str::uuid();
@@ -108,8 +114,8 @@ final readonly class RagManager
         $tenantId = $this->tenant->current();
         $tenantColumn = $this->tenant->column();
 
-        $cacheEnabled = (bool) $this->config->get('rag.cache.enabled', true);
-        $cachePrefix = (string) $this->config->get('rag.cache.prefix', 'rag:v1');
+        $cacheEnabled = $this->config->boolean('rag.cache.enabled', true);
+        $cachePrefix = $this->config->string('rag.cache.prefix', 'rag:v1');
         $cacheKey = $cachePrefix.':ask:'.sha1(json_encode([
             't' => $tenantId,
             'q' => $question,
@@ -122,7 +128,8 @@ final readonly class RagManager
                 && isset($cached['answer'], $cached['chunks'], $cached['query_id'])
                 && is_string($cached['answer'])
                 && is_array($cached['chunks'])
-                && is_string($cached['query_id'])) {
+                && is_string($cached['query_id'])
+            ) {
                 /** @var array{answer:string,chunks:array<int,array{id:string,score:float}>,query_id:string} */
                 return $cached;
             }

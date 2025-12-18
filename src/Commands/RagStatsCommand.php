@@ -18,6 +18,7 @@ final class RagStatsCommand extends Command
 
     public function handle(TenantContext $tenant): int
     {
+
         $docs = RagDocument::query()->count();
         $chunks = RagChunk::query()->count();
         $embeddings = RagEmbedding::query()->count();
@@ -27,9 +28,13 @@ final class RagStatsCommand extends Command
         $tenantId = $tenant->current();
 
         $config = config('rag');
-        $embeddingModel = (string) ($config['ai']['embedding_model'] ?? '');
-        $chatModel = (string) ($config['ai']['chat_model'] ?? '');
-        $hybrid = $config['retrieval']['hybrid'] ?? ['enabled' => false, 'semantic_weight' => 0.0, 'keyword_weight' => 0.0];
+        $embeddingModel = is_string($val = data_get($config, 'ai.embedding_model')) ? $val : '';
+        $chatModel = is_string($val = data_get($config, 'ai.chat_model')) ? $val : '';
+
+        $hybrid = data_get($config, 'retrieval.hybrid');
+        if (! is_array($hybrid)) {
+            $hybrid = ['enabled' => false, 'semantic_weight' => 0.0, 'keyword_weight' => 0.0];
+        }
 
         $payload = [
             'documents' => $docs,
@@ -43,9 +48,13 @@ final class RagStatsCommand extends Command
                 'embedding' => $embeddingModel,
             ],
             'hybrid' => [
-                'enabled' => (bool) ($hybrid['enabled'] ?? false),
-                'semantic_weight' => (float) ($hybrid['semantic_weight'] ?? 0.0),
-                'keyword_weight' => (float) ($hybrid['keyword_weight'] ?? 0.0),
+                'enabled' => (bool) (isset($hybrid['enabled']) ? $hybrid['enabled'] : false),
+                'semantic_weight' => (float) (isset($hybrid['semantic_weight'])
+                && (is_float($hybrid['semantic_weight'])
+                    || is_int($hybrid['semantic_weight'])) ? $hybrid['semantic_weight'] : 0.0),
+                'keyword_weight' => (float) (isset($hybrid['keyword_weight'])
+                && (is_float($hybrid['keyword_weight'])
+                    || is_int($hybrid['keyword_weight'])) ? $hybrid['keyword_weight'] : 0.0),
             ],
         ];
 
@@ -64,11 +73,13 @@ final class RagStatsCommand extends Command
         $this->components->twoColumnDetail('Embeddings', (string) $payload['embeddings']);
         $this->components->twoColumnDetail('KB Version', $payload['kbVersion']);
         $this->components->twoColumnDetail('Tenancy', $payload['tenancy']);
-        $this->components->twoColumnDetail('Tenant ID', is_string($payload['tenantId']) ? $payload['tenantId'] : 'null');
+        $this->components->twoColumnDetail('Tenant ID',
+            is_string($payload['tenantId']) ? $payload['tenantId'] : 'null');
         $this->components->twoColumnDetail('Chat Model', $payload['models']['chat']);
         $this->components->twoColumnDetail('Embedding Model', $payload['models']['embedding']);
         $this->components->twoColumnDetail('Hybrid', $payload['hybrid']['enabled'] ? 'enabled' : 'disabled');
-        $this->components->twoColumnDetail('Hybrid Weights', 'semantic='.$payload['hybrid']['semantic_weight'].' keyword='.$payload['hybrid']['keyword_weight']);
+        $this->components->twoColumnDetail('Hybrid Weights',
+            'semantic='.$payload['hybrid']['semantic_weight'].' keyword='.$payload['hybrid']['keyword_weight']);
 
         return self::SUCCESS;
     }
