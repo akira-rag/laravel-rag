@@ -31,15 +31,6 @@ final class RagIngestCommand extends Command
 
     protected $description = 'Ingest content into the RAG knowledge base';
 
-    /**
-     * @return string
-     */
-    private function stringOption(string $name, string $default = ''): string
-    {
-        $value = $this->option($name);
-        return is_string($value) ? $value : $default;
-    }
-
     public function handle(Filesystem $files): int
     {
 
@@ -155,6 +146,13 @@ final class RagIngestCommand extends Command
         $this->components->twoColumnDetail('Embedding', $embeddingFlag);
 
         return self::SUCCESS;
+    }
+
+    private function stringOption(string $name, string $default = ''): string
+    {
+        $value = $this->option($name);
+
+        return is_string($value) ? $value : $default;
     }
 
     /**

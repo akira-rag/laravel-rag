@@ -25,24 +25,6 @@ final class RagImportPdfCommand extends Command
 
     protected $description = 'Import PDF documents into the RAG knowledge base';
 
-    /**
-     * @return string
-     */
-    private function stringOption(string $name, string $default = ''): string
-    {
-        $value = $this->option($name);
-        return is_string($value) ? $value : $default;
-    }
-
-    /**
-     * @return string
-     */
-    private function stringArgument(string $name, string $default = ''): string
-    {
-        $value = $this->argument($name);
-        return is_string($value) ? $value : $default;
-    }
-
     public function handle(Filesystem $files): int
     {
         $path = $this->stringArgument('path');
@@ -100,6 +82,20 @@ final class RagImportPdfCommand extends Command
         }
 
         return self::SUCCESS;
+    }
+
+    private function stringOption(string $name, string $default = ''): string
+    {
+        $value = $this->option($name);
+
+        return is_string($value) ? $value : $default;
+    }
+
+    private function stringArgument(string $name, string $default = ''): string
+    {
+        $value = $this->argument($name);
+
+        return is_string($value) ? $value : $default;
     }
 
     private function extractText(string $raw): string
