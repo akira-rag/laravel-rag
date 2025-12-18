@@ -138,4 +138,24 @@ return [
         'connection' => null,
         'queue' => null,
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Observability
+    |--------------------------------------------------------------------------
+    |
+    | Configure structured logging and metrics collection for RAG operations.
+    | Logs are written to the configured channel. Metrics are recorded via the
+    | provided recorder implementation.
+    */
+    'observability' => [
+        'logging' => [
+            'enabled' => true,
+            'channel' => 'rag',
+        ],
+        'metrics' => [
+            'enabled' => true,
+            'recorder' => \Akira\Rag\Observability\LogMetricsRecorder::class,
+        ],
+    ],
 ];

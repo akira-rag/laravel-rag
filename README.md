@@ -70,7 +70,7 @@ $answer = Rag::ask('What are the notice periods?');
 
 Commands support interactive prompts and non-interactive flags.
 
-- Commands Guide: docs/03-Commands.md
+- Commands Guide: docs/commands.md
 
 ## Changelog
 
