@@ -55,22 +55,11 @@ $answer = Rag::ask('What are the notice periods?');
 ```
 
 ### Documentation
-
-- 01 Introduction: docs/01-Introduction.md
-- 02 Installation: docs/02-Installation.md
-- 03 Configuration: docs/03-Configuration.md
-- 04 Database: docs/04-Database.md
-- 05 Tenancy: docs/05-Tenancy.md
-- 06 Ingestion: docs/06-Ingestion.md
-- 07 Asking: docs/07-Asking.md
-- 08 Cache and Audit: docs/08-Cache-and-Audit.md
-- 10 Recipes: docs/10-Recipes.md
+For detailed documentation, please visit the package documentation website: https://packages.akira-io.com/packages/laravel-rag
 
 ### CLI Commands
 
 Commands support interactive prompts and non-interactive flags.
-
-- Commands Guide: docs/commands.md
 
 ## Changelog
 
