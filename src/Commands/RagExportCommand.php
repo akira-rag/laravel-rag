@@ -30,21 +30,26 @@ final class RagExportCommand extends Command
 
     protected $description = 'Export the RAG knowledge base for the current tenant';
 
+    /**
+     * @return string
+     */
+    private function stringOption(string $name, string $default = ''): string
+    {
+        $value = $this->option($name);
+        return is_string($value) ? $value : $default;
+    }
+
     public function handle(TenantContext $tenant, Filesystem $files): int
     {
 
-        $formatOpt = $this->option('format');
-        /** @var string $format */
-        $format = is_string($formatOpt) ? $formatOpt : 'json';
+        $format = $this->stringOption('format', 'json');
         if ($format !== 'json') {
             warning('Only json format is supported at the moment.');
 
             return self::INVALID;
         }
 
-        $outputOpt = $this->option('output');
-        /** @var string $output */
-        $output = is_string($outputOpt) ? $outputOpt : '';
+        $output = $this->stringOption('output');
         // @codeCoverageIgnoreStart
         if ($output === '') {
             $suggest = storage_path('app/rag/exports/'.($tenant->enabled() ? ($tenant->current() ?? 'unknown')
