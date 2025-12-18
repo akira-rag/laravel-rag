@@ -1,6 +1,46 @@
 parameters:
 	ignoreErrors:
 		-
+			message: '#^Parameter \#1 \$path of method Illuminate\\Filesystem\\Filesystem::put\(\) expects string, mixed given\.$#'
+			identifier: argument.type
+			path: src/Commands/RagExportCommand.php
+		-
+			message: '#^Parameter \#1 \$path of method Illuminate\\Filesystem\\Filesystem::exists\(\) expects string, mixed given\.$#'
+			identifier: argument.type
+			path: src/Commands/RagImportPdfCommand.php
+		-
+			message: '#^Parameter \#1 \$directory of method Illuminate\\Filesystem\\Filesystem::isDirectory\(\) expects string, mixed given\.$#'
+			identifier: argument.type
+			path: src/Commands/RagImportPdfCommand.php
+		-
+			message: '#^Parameter \#1 \$directory of method Illuminate\\Filesystem\\Filesystem::files\(\) expects string, mixed given\.$#'
+			identifier: argument.type
+			path: src/Commands/RagImportPdfCommand.php
+		-
+			message: '#^Parameter \#1 \$path of method Illuminate\\Filesystem\\Filesystem::name\(\) expects string, mixed given\.$#'
+			identifier: argument.type
+			path: src/Commands/RagImportPdfCommand.php
+		-
+			message: '#^Parameter \#1 \$path of method Illuminate\\Filesystem\\Filesystem::get\(\) expects string, mixed given\.$#'
+			identifier: argument.type
+			path: src/Commands/RagImportPdfCommand.php
+		-
+			message: '#^Parameter \#1 \$path of method Illuminate\\Filesystem\\Filesystem::exists\(\) expects string, mixed given\.$#'
+			identifier: argument.type
+			path: src/Commands/RagIngestCommand.php
+		-
+			message: '#^Parameter \#1 \$path of method Illuminate\\Filesystem\\Filesystem::get\(\) expects string, mixed given\.$#'
+			identifier: argument.type
+			path: src/Commands/RagIngestCommand.php
+		-
+			message: '#^Parameter \#1 \$path of method Illuminate\\Filesystem\\Filesystem::exists\(\) expects string, mixed given\.$#'
+			identifier: argument.type
+			path: src/Commands/RagRestoreCommand.php
+		-
+			message: '#^Parameter \#1 \$path of method Illuminate\\Filesystem\\Filesystem::get\(\) expects string, mixed given\.$#'
+			identifier: argument.type
+			path: src/Commands/RagRestoreCommand.php
+		-
 			message: '#^Cannot cast array\|bool\|string(\|null)? to string\.$#'
 			identifier: cast.string
 		-
@@ -14,12 +54,6 @@ parameters:
 			identifier: assignOp.invalid
 		-
 			message: '#^Parameter \#1 \$path of function dirname expects string, mixed given\.$#'
-			identifier: argument.type
-		-
-			message: '#^Parameter \#1 \$path of method Illuminate\\Filesystem\\Filesystem::(put|exists|name|get) expects string, mixed given\.$#'
-			identifier: argument.type
-		-
-			message: '#^Parameter \#1 \$directory of method Illuminate\\Filesystem\\Filesystem::(isDirectory|files) expects string, mixed given\.$#'
 			identifier: argument.type
 		-
 			message: '#^Binary operation "\." between .* and mixed results in an error\.$#'
