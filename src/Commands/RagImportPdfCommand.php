@@ -25,9 +25,27 @@ final class RagImportPdfCommand extends Command
 
     protected $description = 'Import PDF documents into the RAG knowledge base';
 
+    /**
+     * @return string
+     */
+    private function stringOption(string $name, string $default = ''): string
+    {
+        $value = $this->option($name);
+        return is_string($value) ? $value : $default;
+    }
+
+    /**
+     * @return string
+     */
+    private function stringArgument(string $name, string $default = ''): string
+    {
+        $value = $this->argument($name);
+        return is_string($value) ? $value : $default;
+    }
+
     public function handle(Filesystem $files): int
     {
-        $path = (string) $this->argument('path');
+        $path = $this->stringArgument('path');
         if (! $files->exists($path)) {
             warning('Path not found: '.$path);
 
@@ -51,12 +69,9 @@ final class RagImportPdfCommand extends Command
         $sync = (bool) $this->option('sync');
 
         foreach ($pdfFiles as $pdf) {
-            $titleOpt = $this->option('title');
-            $title = is_string($titleOpt) ? $titleOpt : $files->name($pdf);
-            $sourceTypeOpt = $this->option('source_type');
-            $sourceType = is_string($sourceTypeOpt) ? $sourceTypeOpt : 'pdf';
-            $sourceRefOpt = $this->option('source_ref');
-            $sourceRef = is_string($sourceRefOpt) ? $sourceRefOpt : $pdf;
+            $title = $this->stringOption('title', $files->name($pdf));
+            $sourceType = $this->stringOption('source_type', 'pdf');
+            $sourceRef = $this->stringOption('source_ref', $pdf);
 
             // Minimal PDF text extraction using built-in stream filter (naive)
             $raw = $files->get($pdf);
