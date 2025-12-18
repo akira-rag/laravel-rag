@@ -33,14 +33,19 @@ final class RagExportCommand extends Command
     public function handle(TenantContext $tenant, Filesystem $files): int
     {
 
-        $format = $this->stringOption('format', 'json');
+        $formatOpt = $this->option('format');
+        $format = is_string($formatOpt) ? $formatOpt : 'json';
+        assert(is_string($format));
+
         if ($format !== 'json') {
             warning('Only json format is supported at the moment.');
 
             return self::INVALID;
         }
 
-        $output = $this->stringOption('output');
+        $outputOpt = $this->option('output');
+        $output = is_string($outputOpt) ? $outputOpt : '';
+        assert(is_string($output));
         // @codeCoverageIgnoreStart
         if ($output === '') {
             $suggest = storage_path('app/rag/exports/'.($tenant->enabled() ? ($tenant->current() ?? 'unknown')

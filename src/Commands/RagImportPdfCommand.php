@@ -27,7 +27,9 @@ final class RagImportPdfCommand extends Command
 
     public function handle(Filesystem $files): int
     {
-        $path = $this->stringArgument('path');
+        $pathArg = $this->argument('path');
+        $path = is_string($pathArg) ? $pathArg : '';
+        assert(is_string($path));
         if (! $files->exists($path)) {
             warning('Path not found: '.$path);
 
@@ -51,9 +53,17 @@ final class RagImportPdfCommand extends Command
         $sync = (bool) $this->option('sync');
 
         foreach ($pdfFiles as $pdf) {
-            $title = $this->stringOption('title', $files->name($pdf));
-            $sourceType = $this->stringOption('source_type', 'pdf');
-            $sourceRef = $this->stringOption('source_ref', $pdf);
+            $titleOpt = $this->option('title');
+            $title = is_string($titleOpt) ? $titleOpt : $files->name($pdf);
+            assert(is_string($title));
+
+            $sourceTypeOpt = $this->option('source_type');
+            $sourceType = is_string($sourceTypeOpt) ? $sourceTypeOpt : 'pdf';
+            assert(is_string($sourceType));
+
+            $sourceRefOpt = $this->option('source_ref');
+            $sourceRef = is_string($sourceRefOpt) ? $sourceRefOpt : $pdf;
+            assert(is_string($sourceRef));
 
             // Minimal PDF text extraction using built-in stream filter (naive)
             $raw = $files->get($pdf);
@@ -68,12 +78,15 @@ final class RagImportPdfCommand extends Command
             }
 
             $langOpt = $this->option('lang');
+            $lang = is_string($langOpt) ? $langOpt : 'en';
+            assert(is_string($lang));
+
             Rag::ingest([
                 'title' => $title,
                 'source_type' => $sourceType,
                 'source_ref' => $sourceRef,
                 'content' => $textContent,
-                'meta' => ['lang' => is_string($langOpt) ? $langOpt : 'en'],
+                'meta' => ['lang' => $lang],
             ]);
         }
 
