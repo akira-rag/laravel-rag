@@ -9,14 +9,30 @@ This package provides a complete Retrieval-Augmented Generation (RAG) system for
 composer require akira/laravel-rag
 ```
 
-2. Publish assets
+2. Preferred: use the installer
+
+```bash
+php artisan rag:install
+```
+
+Non-interactive (CI/scripts):
+
+```bash
+php artisan rag:install \
+  --force \
+  --with-tenancy \
+  --run-migrate \
+  --star
+```
+
+3. Alternative: manual setup
 
 ```bash
 php artisan vendor:publish --tag="laravel-rag-config"
 php artisan vendor:publish --tag="laravel-rag-migrations"
 ```
 
-3. Run migrations
+4. Run migrations
 
 ```bash
 php artisan migrate
