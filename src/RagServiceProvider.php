@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Rag\Rag;
+namespace Akira\Rag;
 
-use Rag\Rag\Commands\RagCommand;
+use Akira\Rag\Tenant\TenantContext;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 
@@ -12,16 +12,16 @@ final class RagServiceProvider extends PackageServiceProvider
 {
     public function configurePackage(Package $package): void
     {
-        /*
-         * This class is a Package Service Provider
-         *
-         * More info: https://github.com/spatie/laravel-package-tools
-         */
         $package
             ->name('laravel-rag')
-            ->hasConfigFile()
-            ->hasViews()
-            ->hasMigration('create_laravel_rag_table')
-            ->hasCommand(RagCommand::class);
+            ->hasConfigFile('rag')
+            ->hasMigrations('2025_01_01_000000_create_rag_schema');
+    }
+
+    public function packageRegistered(): void
+    {
+        $this->app->singleton(TenantContext::class);
+        $this->app->singleton(RagManager::class);
+        $this->app->singleton('akira.rag', fn ($app): RagService => new RagService($app->make(RagManager::class)));
     }
 }
