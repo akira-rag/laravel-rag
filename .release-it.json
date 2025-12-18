@@ -40,12 +40,10 @@
     "timeout": 10
   },
   "hooks": {
-    "before:init": [],
-    "after:bump": [
-      "composer install",
-      "npm install"
+    "before:init": [
+      "composer test"
     ],
-    "after:release": []
+    "after:release": "echo Successfully released v${version}"
   },
   "plugins": {
     "@release-it/conventional-changelog": {

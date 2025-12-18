@@ -1,66 +1,54 @@
-# This is my package laravel-rag
+## Akira RAG for Laravel
 
-[![Latest Version on Packagist](https://img.shields.io/packagist/v/akira-rag/laravel-rag.svg?style=flat-square)](https://packagist.org/packages/akira-rag/laravel-rag)
-[![GitHub Tests Action Status](https://img.shields.io/github/actions/workflow/status/akira-rag/laravel-rag/run-tests.yml?branch=main&label=tests&style=flat-square)](https://github.com/akira-rag/laravel-rag/actions?query=workflow%3Arun-tests+branch%3Amain)
-[![GitHub Code Style Action Status](https://img.shields.io/github/actions/workflow/status/akira-rag/laravel-rag/fix-php-code-style-issues.yml?branch=main&label=code%20style&style=flat-square)](https://github.com/akira-rag/laravel-rag/actions?query=workflow%3A"Fix+PHP+code+style+issues"+branch%3Amain)
-[![Total Downloads](https://img.shields.io/packagist/dt/akira-rag/laravel-rag.svg?style=flat-square)](https://packagist.org/packages/akira-rag/laravel-rag)
+This package provides a complete Retrieval-Augmented Generation (RAG) system for Laravel (12+) using PostgreSQL + pgvector, PrismPHP, and Spatie Laravel Data.
+### Installation
 
-This is where your description should go. Limit it to a paragraph or two. Consider adding a small example.
-
-## Support us
-
-[<img src="https://github-ads.s3.eu-central-1.amazonaws.com/laravel-rag.jpg?t=1" width="419px" />](https://spatie.be/github-ad-click/laravel-rag)
-
-We invest a lot of resources into creating [best in class open source packages](https://spatie.be/open-source). You can support us by [buying one of our paid products](https://spatie.be/open-source/support-us).
-
-We highly appreciate you sending us a postcard from your hometown, mentioning which of our package(s) you are using. You'll find our address on [our contact page](https://spatie.be/about-us). We publish all received postcards on [our virtual postcard wall](https://spatie.be/open-source/postcards).
-
-## Installation
-
-You can install the package via composer:
+1. Require the package
 
 ```bash
-composer require akira-rag/laravel-rag
+composer require akira/laravel-rag
 ```
 
-You can publish and run the migrations with:
-
-```bash
-php artisan vendor:publish --tag="laravel-rag-migrations"
-php artisan migrate
-```
-
-You can publish the config file with:
+2. Publish assets
 
 ```bash
 php artisan vendor:publish --tag="laravel-rag-config"
+php artisan vendor:publish --tag="laravel-rag-migrations"
 ```
 
-This is the contents of the published config file:
-
-```php
-return [
-];
-```
-
-Optionally, you can publish the views using
+3. Run migrations
 
 ```bash
-php artisan vendor:publish --tag="laravel-rag-views"
+php artisan migrate
 ```
 
-## Usage
+### Quick Start
 
 ```php
-$rag = new Rag\Rag();
-echo $rag->echoPhrase('Hello, Rag!');
+use Akira\\Rag\\Facades\\Rag;
+
+Rag::ingest([
+    'title' => 'Labor Law',
+    'source_type' => 'law',
+    'source_ref' => 'law:2021:123',
+    'content' => $text,
+    'meta' => ['lang' => 'en'],
+]);
+
+$answer = Rag::ask('What are the notice periods?');
 ```
 
-## Testing
+### Documentation
 
-```bash
-composer test
-```
+- 01 Introduction: docs/01-Introduction.md
+- 02 Installation: docs/02-Installation.md
+- 03 Configuration: docs/03-Configuration.md
+- 04 Database: docs/04-Database.md
+- 05 Tenancy: docs/05-Tenancy.md
+- 06 Ingestion: docs/06-Ingestion.md
+- 07 Asking: docs/07-Asking.md
+- 08 Cache and Audit: docs/08-Cache-and-Audit.md
+- 10 Recipes: docs/10-Recipes.md
 
 ## Changelog
 
