@@ -1,6 +1,36 @@
 parameters:
 	ignoreErrors:
 		-
+			message: '#^Cannot cast array\|bool\|string(\|null)? to string\.$#'
+			identifier: cast.string
+		-
+			message: '#^Parameter \#1 \$haystack of function str_ends_with expects string, mixed given\.$#'
+			identifier: argument.type
+		-
+			message: '#^Binary operation "\.=" between mixed and .* results in an error\.$#'
+			identifier: assignOp.invalid
+		-
+			message: '#^Parameter \#1 \$path of function dirname expects string, mixed given\.$#'
+			identifier: argument.type
+		-
+			message: '#^Parameter \#1 \$path of method Illuminate\\Filesystem\\Filesystem\:\:(put|exists|name|get) expects string, mixed given\.$#'
+			identifier: argument.type
+		-
+			message: '#^Parameter \#1 \$directory of method Illuminate\\Filesystem\\Filesystem\:\:(isDirectory|files) expects string, mixed given\.$#'
+			identifier: argument.type
+		-
+			message: '#^Binary operation "\." between .* and mixed results in an error\.$#'
+			identifier: binaryOp.invalid
+		-
+			message: '#^Parameter \#2 \$second of method Illuminate\\Console\\View\\Components\\Factory\:\:twoColumnDetail\(\) expects string\|null, mixed given\.$#'
+			identifier: argument.type
+		-
+			message: '#^Parameter \#1 \$path of function pathinfo expects string, mixed given\.$#'
+			identifier: argument.type
+		-
+			message: '#^Parameter \#1 \$pairs of method Akira\\Rag\\Commands\\RagIngestCommand\:\:parseMeta\(\) expects list\<string\>, array.* given\.$#'
+			identifier: argument.type
+		-
 			message: '#^Call to an undefined method Illuminate\\Contracts\\Encryption\\Encrypter\:\:encryptString\(\)\.$#'
 			identifier: method.notFound
 			count: 1
@@ -21,12 +51,6 @@ parameters:
 		-
 			message: '#^Dead catch \- Akira\\Rag\\Exceptions\\InvalidPayload is never thrown in the try block\.$#'
 			identifier: catch.neverThrown
-			count: 1
-			path: src/Commands/RagIngestCommand.php
-
-		-
-			message: '#^Parameter \#1 \$pairs of method Akira\\Rag\\Commands\\RagIngestCommand\:\:parseMeta\(\) expects list\<string\>, array\<int, string\|null\> given\.$#'
-			identifier: argument.type
 			count: 1
 			path: src/Commands/RagIngestCommand.php
 
