@@ -32,6 +32,9 @@ jobs:
       - name: Install Aspell
         run: sudo apt-get update && sudo apt-get install -y aspell aspell-en
 
+      - name: Clear Composer cache
+        run: composer clear-cache
+
       - name: Install dependencies
         run: composer install --prefer-dist --no-progress --no-interaction
 
