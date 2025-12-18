@@ -21,9 +21,18 @@ final class RagBackupCommand extends Command
     public function handle(TenantContext $tenant, Filesystem $files): int
     {
         $suggestDir = storage_path('app/rag/backups/'.($tenant->enabled() ? ($tenant->current() ?? 'unknown') : 'single'));
-        $output = (string) ($this->option('output') ?? $suggestDir.'/backup-'.\Illuminate\Support\Facades\Date::now()->format('Ymd-His').'.json');
-        $retain = (int) ($this->option('retain') ?? 7);
-        $encrypt = ! (bool) $this->option('no-encryption');
+        $optOutput = $this->option('output');
+        $output = is_string($optOutput) && $optOutput !== ''
+            ? $optOutput
+            : $suggestDir.'/backup-'.\Illuminate\Support\Facades\Date::now()->format('Ymd-His').'.json';
+
+        $optRetain = $this->option('retain');
+        $retain = is_int($optRetain) || (is_string($optRetain) && is_numeric($optRetain))
+            ? (int) $optRetain
+            : 7;
+
+        $noEncryption = $this->option('no-encryption');
+        $encrypt = $noEncryption === true ? false : true;
 
         // Call export with compression and encryption by default
         $params = [
