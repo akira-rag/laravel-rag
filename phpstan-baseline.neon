@@ -31,6 +31,12 @@ parameters:
 			path: src/Commands/RagIngestCommand.php
 
 		-
+			message: '#^Dead catch \- Akira\\Rag\\Exceptions\\InvalidPayload is never thrown in the try block\.$#'
+			identifier: catch.neverThrown
+			count: 1
+			path: src/Commands/RagIngestCommand.php
+
+		-
 			message: '#^Expression on left side of \?\? is not nullable\.$#'
 			identifier: nullCoalesce.expr
 			count: 1
@@ -173,6 +179,18 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: src/Commands/RagStatsCommand.php
+
+		-
+			message: '#^Class Akira\\Rag\\Facades\\Rag has PHPDoc tag @method for method ask\(\) parameter \#2 \$filters with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Facades/Rag.php
+
+		-
+			message: '#^Class Akira\\Rag\\Facades\\Rag has PHPDoc tag @method for method ingest\(\) parameter \#1 \$payload with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Facades/Rag.php
 
 		-
 			message: '#^Class Akira\\Rag\\Models\\RagChunk uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
