@@ -1,0 +1,10 @@
+{
+	"scripts": {
+		"release": "release-it"
+	},
+	"devDependencies": {
+		"@commitlint/cli": "^20.2.0",
+		"@release-it/conventional-changelog": "^10.0.3",
+		"release-it": "^19.1.0"
+	}
+}
