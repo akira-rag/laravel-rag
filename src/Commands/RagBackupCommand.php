@@ -32,7 +32,7 @@ final class RagBackupCommand extends Command
             : 7;
 
         $noEncryption = $this->option('no-encryption');
-        $encrypt = $noEncryption === true ? false : true;
+        $encrypt = $noEncryption !== true;
 
         // Call export with compression and encryption by default
         $params = [
