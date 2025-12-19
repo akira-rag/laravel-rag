@@ -31,7 +31,6 @@ final class RagRestoreCommand extends Command
     {
 
         $pathArg = $this->argument('path');
-        /** @phpstan-ignore function.alreadyNarrowedType */
         if (! is_string($pathArg)) {
             warning('Invalid path argument.');
 

@@ -28,7 +28,6 @@ final class RagImportPdfCommand extends Command
     public function handle(Filesystem $files): int
     {
         $pathArg = $this->argument('path');
-        /** @phpstan-ignore function.alreadyNarrowedType */
         if (! is_string($pathArg)) {
             warning('Invalid path argument.');
 
