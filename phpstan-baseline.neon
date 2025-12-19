@@ -1,19 +1,7 @@
 parameters:
 	ignoreErrors:
 		-
-			message: '#^Call to function is_string\(\) with string will always evaluate to true\.$#'
-			identifier: function.alreadyNarrowedType
-			count: 1
-			path: src/Commands/RagImportPdfCommand.php
-
-		-
 			message: '#^Dead catch \- Akira\\Rag\\Exceptions\\InvalidPayload is never thrown in the try block\.$#'
 			identifier: catch.neverThrown
 			count: 1
 			path: src/Commands/RagIngestCommand.php
-
-		-
-			message: '#^Call to function is_string\(\) with string will always evaluate to true\.$#'
-			identifier: function.alreadyNarrowedType
-			count: 1
-			path: src/Commands/RagRestoreCommand.php

@@ -29,14 +29,8 @@ final class RagRestoreCommand extends Command
 
     public function handle(Filesystem $files): int
     {
-
-        $pathArg = $this->argument('path');
-        if (! is_string($pathArg)) {
-            warning('Invalid path argument.');
-
-            return self::INVALID;
-        }
-        $path = $pathArg;
+        /** @var string $path */
+        $path = $this->argument('path');
         if (! $files->exists($path)) {
             warning('Backup not found: '.$path);
 
