@@ -33,31 +33,31 @@ final class RagExportCommand extends Command
     public function handle(TenantContext $tenant, Filesystem $files): int
     {
 
-        $formatOpt = $this->option('format');
-        $format = is_string($formatOpt) ? $formatOpt : 'json';
+        $formatOption = $this->option('format');
+        $exportFormat = is_string($formatOption) ? $formatOption : 'json';
 
-        if ($format !== 'json') {
+        if ($exportFormat !== 'json') {
             warning('Only json format is supported at the moment.');
 
             return self::INVALID;
         }
 
-        $outputOpt = $this->option('output');
-        $output = is_string($outputOpt) ? $outputOpt : '';
+        $outputOption = $this->option('output');
+        $outputPath = is_string($outputOption) ? $outputOption : '';
         // @codeCoverageIgnoreStart
-        if ($output === '') {
-            $suggest = storage_path('app/rag/exports/'.($tenant->enabled() ? ($tenant->current() ?? 'unknown')
+        if ($outputPath === '') {
+            $suggestedPath = storage_path('app/rag/exports/'.($tenant->enabled() ? ($tenant->current() ?? 'unknown')
                     : 'single').'/export-'.Date::now()->format('Ymd-His').'.json');
-            $output = text('Output path', default: $suggest);
+            $outputPath = text('Output path', default: $suggestedPath);
         }
         // @codeCoverageIgnoreEnd
 
         $includeEmbeddings = (bool) $this->option('include-embeddings');
         $includeAudit = (bool) $this->option('include-audit');
-        $compress = (bool) $this->option('compress');
-        $encrypt = (bool) $this->option('encrypt');
+        $shouldCompress = (bool) $this->option('compress');
+        $shouldEncrypt = (bool) $this->option('encrypt');
 
-        $payload = [
+        $exportPayload = [
             'meta' => [
                 'version' => 'v1',
                 'tenant' => $tenant->enabled() ? ($tenant->current() ?? null) : 'single',
@@ -69,47 +69,47 @@ final class RagExportCommand extends Command
             'queries' => $includeAudit ? RagQuery::query()->orderBy('id')->get()->toArray() : [],
         ];
 
-        $json = json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+        $jsonContent = json_encode($exportPayload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
         // @codeCoverageIgnoreStart
-        if ($json === false) {
+        if ($jsonContent === false) {
             warning('Failed to encode export payload.');
 
             return self::FAILURE;
         }
         // @codeCoverageIgnoreEnd
 
-        if ($encrypt) {
-            /** @var Encrypter $crypt */
-            $crypt = resolve(Encrypter::class);
-            $json = $crypt->encryptString($json);
+        if ($shouldEncrypt) {
+            /** @var Encrypter $encrypter */
+            $encrypter = resolve(Encrypter::class);
+            $jsonContent = $encrypter->encryptString($jsonContent);
         }
 
-        $finalPath = $output;
-        if ($compress) {
-            if (! str_ends_with($finalPath, '.gz')) {
-                $finalPath .= '.gz';
+        $finalOutputPath = $outputPath;
+        if ($shouldCompress) {
+            if (! str_ends_with($finalOutputPath, '.gz')) {
+                $finalOutputPath .= '.gz';
             }
-            $gz = gzencode((string) $json, 9);
+            $compressedContent = gzencode((string) $jsonContent, 9);
             // @codeCoverageIgnoreStart
-            if ($gz === false) {
+            if ($compressedContent === false) {
                 warning('Failed to compress export.');
 
                 return self::FAILURE;
             }
             // @codeCoverageIgnoreEnd
-            $files->ensureDirectoryExists(dirname($finalPath));
-            $files->put($finalPath, $gz);
+            $files->ensureDirectoryExists(dirname($finalOutputPath));
+            $files->put($finalOutputPath, $compressedContent);
         } else {
-            $files->ensureDirectoryExists(dirname($finalPath));
-            $files->put($finalPath, $json);
+            $files->ensureDirectoryExists(dirname($finalOutputPath));
+            $files->put($finalOutputPath, $jsonContent);
         }
 
         $this->newLine();
-        $this->components->twoColumnDetail('Format', $format.($compress ? '+gz' : ''));
-        $this->components->twoColumnDetail('Encrypted', $encrypt ? 'yes' : 'no');
+        $this->components->twoColumnDetail('Format', $exportFormat.($shouldCompress ? '+gz' : ''));
+        $this->components->twoColumnDetail('Encrypted', $shouldEncrypt ? 'yes' : 'no');
         $this->components->twoColumnDetail('Embeddings', $includeEmbeddings ? 'included' : 'omitted');
         $this->components->twoColumnDetail('Audit', $includeAudit ? 'included' : 'omitted');
-        $this->components->twoColumnDetail('Output', $finalPath);
+        $this->components->twoColumnDetail('Output', $finalOutputPath);
 
         return self::SUCCESS;
     }

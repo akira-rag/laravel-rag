@@ -95,12 +95,12 @@ final class RagIngestCommand extends Command
             // Meta key=value pairs loop
             if ($metaPairs === []) {
                 while (true) {
-                    $k = text('Meta key (blank to finish)', required: false);
-                    if ($k === '') {
+                    $metaKey = text('Meta key (blank to finish)', required: false);
+                    if ($metaKey === '') {
                         break;
                     }
-                    $v = text("Meta value for '{$k}'", required: false);
-                    $metaPairs[] = $k.'='.$v;
+                    $metaValue = text("Meta value for '{$metaKey}'", required: false);
+                    $metaPairs[] = $metaKey.'='.$metaValue;
                     if (! confirm('Add another meta pair?', false)) {
                         break;
                     }
@@ -134,7 +134,7 @@ final class RagIngestCommand extends Command
         $meta = $this->parseMeta($metaPairs);
 
         try {
-            $result = Rag::ingest([
+            $ingestResult = Rag::ingest([
                 'title' => $title,
                 'source_type' => $sourceType,
                 'source_ref' => $sourceRef,
@@ -150,8 +150,8 @@ final class RagIngestCommand extends Command
         $embeddingFlag = $this->option('no-embed') ? 'skipped' : ($this->option('sync') ? 'synced' : 'dispatched');
 
         $this->newLine();
-        $this->components->twoColumnDetail('Document ID', $result['document_id']);
-        $this->components->twoColumnDetail('Chunks', (string) $result['chunks']);
+        $this->components->twoColumnDetail('Document ID', $ingestResult['document_id']);
+        $this->components->twoColumnDetail('Chunks', (string) $ingestResult['chunks']);
         $this->components->twoColumnDetail('Embedding', $embeddingFlag);
 
         return self::SUCCESS;
@@ -164,22 +164,22 @@ final class RagIngestCommand extends Command
     private function parseMeta(array $pairs): array
     {
 
-        $out = [];
+        $metadata = [];
         foreach ($pairs as $pair) {
             if ($pair === '') {
                 continue;
             }
-            $pos = mb_strpos($pair, '=');
-            if ($pos === false) {
-                $out[$pair] = true;
+            $equalPosition = mb_strpos($pair, '=');
+            if ($equalPosition === false) {
+                $metadata[$pair] = true;
 
                 continue;
             }
-            $k = mb_substr($pair, 0, $pos);
-            $v = mb_substr($pair, $pos + 1);
-            $out[$k] = $v;
+            $metaKey = mb_substr($pair, 0, $equalPosition);
+            $metaValue = mb_substr($pair, $equalPosition + 1);
+            $metadata[$metaKey] = $metaValue;
         }
 
-        return $out;
+        return $metadata;
     }
 }

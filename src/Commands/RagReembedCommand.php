@@ -24,49 +24,49 @@ final class RagReembedCommand extends Command
 
     public function handle(): int
     {
-        $docIdOpt = $this->option('document_id');
-        /** @var string $docId */
-        $docId = is_string($docIdOpt) ? $docIdOpt : '';
-        $all = (bool) $this->option('all');
-        $modelOpt = $this->option('model');
-        /** @var string $model */
-        $model = is_string($modelOpt) ? $modelOpt : '';
+        $documentIdOption = $this->option('document_id');
+        /** @var string $documentId */
+        $documentId = is_string($documentIdOption) ? $documentIdOption : '';
+        $processAllDocuments = (bool) $this->option('all');
+        $modelOption = $this->option('model');
+        /** @var string $embeddingModel */
+        $embeddingModel = is_string($modelOption) ? $modelOption : '';
 
-        if (! $all && $docId === '' && $this->input->isInteractive() && ! app()->runningUnitTests()) {
+        if (! $processAllDocuments && $documentId === '' && $this->input->isInteractive() && ! app()->runningUnitTests()) {
             // @codeCoverageIgnoreStart
             info('Akira RAG - Reembed');
-            $choice = select('Rebuild embeddings for', [
+            $userChoice = select('Rebuild embeddings for', [
                 'all' => 'All documents',
                 'single' => 'Single document',
             ], 'single');
-            if ($choice === 'all') {
-                $all = true;
+            if ($userChoice === 'all') {
+                $processAllDocuments = true;
             } else {
-                $docId = text('Document ID (UUID)');
+                $documentId = text('Document ID (UUID)');
             }
             // @codeCoverageIgnoreEnd
         }
 
-        if (! $all && $docId === '') {
+        if (! $processAllDocuments && $documentId === '') {
             warning('Provide --document_id or use --all');
 
             return self::INVALID;
         }
 
-        $query = RagDocument::query();
-        $countDocs = 0;
-        $countChunks = 0; // placeholder for future per-chunk re-embeddings
+        $documentsQuery = RagDocument::query();
+        $affectedDocumentsCount = 0;
+        $recreatedEmbeddingsCount = 0; // placeholder for future per-chunk re-embeddings
 
-        $documents = $all ? $query->pluck('id') : $query->whereKey($docId)->pluck('id');
+        $documentIds = $processAllDocuments ? $documentsQuery->pluck('id') : $documentsQuery->whereKey($documentId)->pluck('id');
 
-        $countDocs = $documents->count();
-        $countChunks = 0;
+        $affectedDocumentsCount = $documentIds->count();
+        $recreatedEmbeddingsCount = 0;
 
         $this->newLine();
-        $this->components->twoColumnDetail('Documents affected', (string) $countDocs);
-        $this->components->twoColumnDetail('Embeddings recreated', (string) $countChunks);
-        if ($model !== '') {
-            $this->components->twoColumnDetail('Model override', $model);
+        $this->components->twoColumnDetail('Documents affected', (string) $affectedDocumentsCount);
+        $this->components->twoColumnDetail('Embeddings recreated', (string) $recreatedEmbeddingsCount);
+        if ($embeddingModel !== '') {
+            $this->components->twoColumnDetail('Model override', $embeddingModel);
         }
         $this->components->twoColumnDetail('Mode', $this->option('sync') ? 'sync' : 'queue');
 

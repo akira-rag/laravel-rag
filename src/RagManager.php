@@ -35,57 +35,57 @@ final readonly class RagManager
     public function ingest(array $payload): array
     {
 
-        foreach (['title', 'source_type', 'source_ref', 'content'] as $key) {
-            throw_if(! isset($payload[$key]) || ! is_string($payload[$key]) || $payload[$key] === '',
-                InvalidPayload::class, 'Missing or invalid field: '.$key);
+        foreach (['title', 'source_type', 'source_ref', 'content'] as $requiredField) {
+            throw_if(! isset($payload[$requiredField]) || ! is_string($payload[$requiredField]) || $payload[$requiredField] === '',
+                InvalidPayload::class, 'Missing or invalid field: '.$requiredField);
         }
 
         throw_if(array_key_exists('tenant_id', $payload), InvalidPayload::class, 'tenant_id is not allowed in payload');
 
-        $meta = is_array($payload['meta'] ?? null) ? $payload['meta'] : [];
+        $metadata = is_array($payload['meta'] ?? null) ? $payload['meta'] : [];
 
         assert(is_string($payload['source_type']));
         assert(is_string($payload['source_ref']));
         assert(is_string($payload['content']));
 
-        $hash = hash('sha256',
+        $contentHash = hash('sha256',
             $payload['source_type'].'|'.$payload['source_ref'].'|'.hash('sha256', $payload['content']));
 
         $tenantId = $this->tenant->current();
         $tenantColumn = $this->tenant->column();
 
-        $existing = RagDocument::query()
-            ->where('hash', $hash)
+        $existingDocument = RagDocument::query()
+            ->where('hash', $contentHash)
             ->first();
-        if ($existing) {
-            $key = $existing->getKey();
-            assert(is_string($key) || is_int($key));
+        if ($existingDocument) {
+            $existingDocumentKey = $existingDocument->getKey();
+            assert(is_string($existingDocumentKey) || is_int($existingDocumentKey));
 
-            return ['document_id' => (string) $key, 'chunks' => $existing->chunks()->count()];
+            return ['document_id' => (string) $existingDocumentKey, 'chunks' => $existingDocument->chunks()->count()];
         }
 
-        $docId = (string) Str::uuid();
+        $documentId = (string) Str::uuid();
 
-        $this->db->transaction(function () use ($payload, $meta, $hash, $tenantId, $tenantColumn, $docId): void {
+        $this->db->transaction(function () use ($payload, $metadata, $contentHash, $tenantId, $tenantColumn, $documentId): void {
 
             $document = RagDocument::query()->create([
-                'id' => $docId,
+                'id' => $documentId,
                 'title' => $payload['title'],
                 'source_type' => $payload['source_type'],
                 'source_ref' => $payload['source_ref'],
-                'hash' => $hash,
+                'hash' => $contentHash,
                 $tenantColumn => $tenantId,
-                'meta' => $meta,
+                'meta' => $metadata,
             ]);
 
-            $chunks = $this->chunk($payload['content']);
-            foreach ($chunks as $i => $content) {
+            $contentChunks = $this->chunk($payload['content']);
+            foreach ($contentChunks as $chunkPosition => $chunkContent) {
                 $chunkId = (string) Str::uuid();
                 RagChunk::query()->create([
                     'id' => $chunkId,
                     'document_id' => $document->getKey(),
-                    'position' => $i,
-                    'content' => $content,
+                    'position' => $chunkPosition,
+                    'content' => $chunkContent,
                     $tenantColumn => $tenantId,
                     'meta' => [],
                 ]);
@@ -100,7 +100,7 @@ final readonly class RagManager
             }
         });
 
-        return ['document_id' => $docId, 'chunks' => count($this->chunk($payload['content']))];
+        return ['document_id' => $documentId, 'chunks' => count($this->chunk($payload['content']))];
     }
 
     /**
@@ -124,37 +124,37 @@ final readonly class RagManager
         ], JSON_THROW_ON_ERROR));
 
         if ($cacheEnabled) {
-            $cached = $this->cache->store()->get($cacheKey);
-            if (is_array($cached)
-                && isset($cached['answer'], $cached['chunks'], $cached['query_id'])
-                && is_string($cached['answer'])
-                && is_array($cached['chunks'])
-                && is_string($cached['query_id'])
+            $cachedResult = $this->cache->store()->get($cacheKey);
+            if (is_array($cachedResult)
+                && isset($cachedResult['answer'], $cachedResult['chunks'], $cachedResult['query_id'])
+                && is_string($cachedResult['answer'])
+                && is_array($cachedResult['chunks'])
+                && is_string($cachedResult['query_id'])
             ) {
-                /** @var array{answer:string,chunks:array<int,array{id:string,score:float}>,query_id:string} $cached */
-                return $cached;
+                /** @var array{answer:string,chunks:array<int,array{id:string,score:float}>,query_id:string} $cachedResult */
+                return $cachedResult;
             }
         }
 
         $queryId = (string) Str::uuid();
 
-        /** @var array<int,array{id:string,score:float}> $chunks */
-        $chunks = RagChunk::query()
-            ->when(isset($filters['document_id']), function (Builder $q) use ($filters): void {
+        /** @var array<int,array{id:string,score:float}> $retrievedChunks */
+        $retrievedChunks = RagChunk::query()
+            ->when(isset($filters['document_id']), function (Builder $query) use ($filters): void {
 
-                $q->where('document_id', $filters['document_id']);
+                $query->where('document_id', $filters['document_id']);
             })
             ->orderBy('position')
             ->limit($this->config->integer('rag.retrieval.top_k', 5))
             ->get(['id', 'position'])
-            ->map(fn (RagChunk $c): array => ['id' => (string) $c->id, 'score' => 1.0])
+            ->map(fn (RagChunk $chunk): array => ['id' => (string) $chunk->id, 'score' => 1.0])
             ->values()
             ->all();
 
         $auditEnabled = (bool) $this->config->get('rag.audit.enabled', true);
 
         if ($auditEnabled) {
-            $this->db->transaction(function () use ($queryId, $question, $tenantId, $tenantColumn, $chunks): void {
+            $this->db->transaction(function () use ($queryId, $question, $tenantId, $tenantColumn, $retrievedChunks): void {
 
                 RagQuery::query()->create([
                     'id' => $queryId,
@@ -163,13 +163,13 @@ final readonly class RagManager
                     'meta' => [],
                 ]);
 
-                foreach ($chunks as $rank => $c) {
+                foreach ($retrievedChunks as $chunkRank => $chunkData) {
                     RagQueryChunk::query()->create([
                         'id' => (string) Str::uuid(),
                         'query_id' => $queryId,
-                        'chunk_id' => $c['id'],
-                        'score' => $c['score'],
-                        'rank' => $rank,
+                        'chunk_id' => $chunkData['id'],
+                        'score' => $chunkData['score'],
+                        'rank' => $chunkRank,
                         $tenantColumn => $tenantId,
                         'meta' => [],
                     ]);
@@ -180,13 +180,13 @@ final readonly class RagManager
         /** @var array{answer:string,chunks:array<int,array{id:string,score:float}>,query_id:string} $result */
         $result = [
             'answer' => 'Deterministic mock answer',
-            'chunks' => $chunks,
+            'chunks' => $retrievedChunks,
             'query_id' => $queryId,
         ];
 
         if ($cacheEnabled) {
-            $ttl = $this->config->integer('rag.cache.ttl_seconds', 1209600);
-            $this->cache->store()->put($cacheKey, $result, $ttl);
+            $cacheTtlSeconds = $this->config->integer('rag.cache.ttl_seconds', 1209600);
+            $this->cache->store()->put($cacheKey, $result, $cacheTtlSeconds);
         }
 
         return $result;
@@ -198,25 +198,25 @@ final readonly class RagManager
     public function chunk(string $content): array
     {
 
-        $target = $this->config->integer('rag.chunking.target_tokens', 800);
-        $overlap = $this->config->integer('rag.chunking.overlap_tokens', 120);
+        $targetTokens = $this->config->integer('rag.chunking.target_tokens', 800);
+        $overlapTokens = $this->config->integer('rag.chunking.overlap_tokens', 120);
 
         $words = preg_split('/\s+/', mb_trim($content)) ?: [];
         if ($words === [] || (count($words) === 1 && $words[0] === '')) {
             return [];
         }
 
-        $chunks = [];
-        $i = 0;
-        while ($i < count($words)) {
-            $chunkWords = array_slice($words, $i, $target);
-            $chunks[] = implode(' ', $chunkWords);
-            if ($i + $target >= count($words)) {
+        $resultChunks = [];
+        $currentIndex = 0;
+        while ($currentIndex < count($words)) {
+            $chunkWords = array_slice($words, $currentIndex, $targetTokens);
+            $resultChunks[] = implode(' ', $chunkWords);
+            if ($currentIndex + $targetTokens >= count($words)) {
                 break;
             }
-            $i += ($target - $overlap);
+            $currentIndex += ($targetTokens - $overlapTokens);
         }
 
-        return $chunks;
+        return $resultChunks;
     }
 }

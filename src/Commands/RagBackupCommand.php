@@ -23,49 +23,49 @@ final class RagBackupCommand extends Command
     public function handle(TenantContext $tenant, Filesystem $files): int
     {
 
-        $suggestDir = storage_path('app/rag/backups/'.($tenant->enabled() ? ($tenant->current() ?? 'unknown')
+        $suggestedDirectory = storage_path('app/rag/backups/'.($tenant->enabled() ? ($tenant->current() ?? 'unknown')
                 : 'single'));
-        $optOutput = $this->option('output');
-        $output = is_string($optOutput) && $optOutput !== ''
-            ? $optOutput
-            : $suggestDir.'/backup-'.Date::now()->format('Ymd-His').'.json';
+        $outputOption = $this->option('output');
+        $backupOutputPath = is_string($outputOption) && $outputOption !== ''
+            ? $outputOption
+            : $suggestedDirectory.'/backup-'.Date::now()->format('Ymd-His').'.json';
 
-        $retain = (int) $this->option('retain');
+        $retentionDays = (int) $this->option('retain');
 
-        //        $retain = is_int($optRetain) || (is_string($optRetain) && is_numeric($optRetain))
+        //        $retentionDays = is_int($optRetain) || (is_string($optRetain) && is_numeric($optRetain))
         //            ? (int) $optRetain
         //            : 7;
 
         $noEncryption = $this->option('no-encryption');
-        $encrypt = $noEncryption !== true;
+        $shouldEncrypt = $noEncryption !== true;
 
         // Call export with compression and encryption by default
-        $params = [
+        $exportParams = [
             '--format' => 'json',
-            '--output' => $output,
+            '--output' => $backupOutputPath,
             '--compress' => true,
         ];
-        if ($encrypt) {
-            $params['--encrypt'] = true;
+        if ($shouldEncrypt) {
+            $exportParams['--encrypt'] = true;
         }
 
-        $this->call('rag:export', $params);
+        $this->call('rag:export', $exportParams);
 
         // prune old backups
-        $files->ensureDirectoryExists(dirname($output));
-        $filesList = collect($files->files(dirname($output)))
-            ->filter(fn (SplFileInfo $f): bool => str_starts_with($files->name($f->getPathname()), 'backup-'))
-            ->sortByDesc(fn (SplFileInfo $f): int => $files->lastModified($f->getPathname()))
+        $files->ensureDirectoryExists(dirname($backupOutputPath));
+        $backupFilesList = collect($files->files(dirname($backupOutputPath)))
+            ->filter(fn (SplFileInfo $fileInfo): bool => str_starts_with($files->name($fileInfo->getPathname()), 'backup-'))
+            ->sortByDesc(fn (SplFileInfo $fileInfo): int => $files->lastModified($fileInfo->getPathname()))
             ->values();
 
-        if ($filesList->count() > $retain) {
-            $filesList->slice($retain)->each(fn (SplFileInfo $f) => $files->delete($f->getPathname()));
+        if ($backupFilesList->count() > $retentionDays) {
+            $backupFilesList->slice($retentionDays)->each(fn (SplFileInfo $fileInfo) => $files->delete($fileInfo->getPathname()));
         }
 
         $this->newLine();
-        $this->components->twoColumnDetail('Output', $output.(str_ends_with($output, '.gz') ? '' : '.gz'));
-        $this->components->twoColumnDetail('Encryption', $encrypt ? 'enabled' : 'disabled');
-        $this->components->twoColumnDetail('Retention', (string) $retain);
+        $this->components->twoColumnDetail('Output', $backupOutputPath.(str_ends_with($backupOutputPath, '.gz') ? '' : '.gz'));
+        $this->components->twoColumnDetail('Encryption', $shouldEncrypt ? 'enabled' : 'disabled');
+        $this->components->twoColumnDetail('Retention', (string) $retentionDays);
 
         return self::SUCCESS;
     }

@@ -19,67 +19,67 @@ final class RagStatsCommand extends Command
     public function handle(TenantContext $tenant): int
     {
 
-        $docs = RagDocument::query()->count();
-        $chunks = RagChunk::query()->count();
-        $embeddings = RagEmbedding::query()->count();
+        $documentsCount = RagDocument::query()->count();
+        $chunksCount = RagChunk::query()->count();
+        $embeddingsCount = RagEmbedding::query()->count();
 
-        $kbVersion = 'v1';
+        $knowledgeBaseVersion = 'v1';
         $tenancyEnabled = $tenant->enabled();
-        $tenantId = $tenant->current();
+        $currentTenantId = $tenant->current();
 
-        $config = config('rag');
-        $embeddingModel = is_string($val = data_get($config, 'ai.embedding_model')) ? $val : '';
-        $chatModel = is_string($val = data_get($config, 'ai.chat_model')) ? $val : '';
+        $ragConfig = config('rag');
+        $embeddingModel = is_string($configValue = data_get($ragConfig, 'ai.embedding_model')) ? $configValue : '';
+        $chatModel = is_string($configValue = data_get($ragConfig, 'ai.chat_model')) ? $configValue : '';
 
-        $hybrid = data_get($config, 'retrieval.hybrid');
-        if (! is_array($hybrid)) {
-            $hybrid = ['enabled' => false, 'semantic_weight' => 0.0, 'keyword_weight' => 0.0];
+        $hybridConfig = data_get($ragConfig, 'retrieval.hybrid');
+        if (! is_array($hybridConfig)) {
+            $hybridConfig = ['enabled' => false, 'semantic_weight' => 0.0, 'keyword_weight' => 0.0];
         }
 
-        $payload = [
-            'documents' => $docs,
-            'chunks' => $chunks,
-            'embeddings' => $embeddings,
-            'kbVersion' => $kbVersion,
+        $statsPayload = [
+            'documents' => $documentsCount,
+            'chunks' => $chunksCount,
+            'embeddings' => $embeddingsCount,
+            'kbVersion' => $knowledgeBaseVersion,
             'tenancy' => $tenancyEnabled ? 'multi' : 'single',
-            'tenantId' => $tenancyEnabled ? ($tenantId ?? null) : 'single',
+            'tenantId' => $tenancyEnabled ? ($currentTenantId ?? null) : 'single',
             'models' => [
                 'chat' => $chatModel,
                 'embedding' => $embeddingModel,
             ],
             'hybrid' => [
-                'enabled' => (bool) ($hybrid['enabled'] ?? false),
-                'semantic_weight' => (float) (isset($hybrid['semantic_weight'])
-                && (is_float($hybrid['semantic_weight'])
-                    || is_int($hybrid['semantic_weight'])) ? $hybrid['semantic_weight'] : 0.0),
-                'keyword_weight' => (float) (isset($hybrid['keyword_weight'])
-                && (is_float($hybrid['keyword_weight'])
-                    || is_int($hybrid['keyword_weight'])) ? $hybrid['keyword_weight'] : 0.0),
+                'enabled' => (bool) ($hybridConfig['enabled'] ?? false),
+                'semantic_weight' => (float) (isset($hybridConfig['semantic_weight'])
+                && (is_float($hybridConfig['semantic_weight'])
+                    || is_int($hybridConfig['semantic_weight'])) ? $hybridConfig['semantic_weight'] : 0.0),
+                'keyword_weight' => (float) (isset($hybridConfig['keyword_weight'])
+                && (is_float($hybridConfig['keyword_weight'])
+                    || is_int($hybridConfig['keyword_weight'])) ? $hybridConfig['keyword_weight'] : 0.0),
             ],
         ];
 
         if ($this->option('json')) {
-            $json = json_encode($payload, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
-            if ($json !== false) {
-                $this->output->writeln($json);
+            $jsonOutput = json_encode($statsPayload, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+            if ($jsonOutput !== false) {
+                $this->output->writeln($jsonOutput);
             }
 
             return self::SUCCESS;
         }
 
         $this->newLine();
-        $this->components->twoColumnDetail('Documents', (string) $payload['documents']);
-        $this->components->twoColumnDetail('Chunks', (string) $payload['chunks']);
-        $this->components->twoColumnDetail('Embeddings', (string) $payload['embeddings']);
-        $this->components->twoColumnDetail('KB Version', $payload['kbVersion']);
-        $this->components->twoColumnDetail('Tenancy', $payload['tenancy']);
+        $this->components->twoColumnDetail('Documents', (string) $statsPayload['documents']);
+        $this->components->twoColumnDetail('Chunks', (string) $statsPayload['chunks']);
+        $this->components->twoColumnDetail('Embeddings', (string) $statsPayload['embeddings']);
+        $this->components->twoColumnDetail('KB Version', $statsPayload['kbVersion']);
+        $this->components->twoColumnDetail('Tenancy', $statsPayload['tenancy']);
         $this->components->twoColumnDetail('Tenant ID',
-            is_string($payload['tenantId']) ? $payload['tenantId'] : 'null');
-        $this->components->twoColumnDetail('Chat Model', $payload['models']['chat']);
-        $this->components->twoColumnDetail('Embedding Model', $payload['models']['embedding']);
-        $this->components->twoColumnDetail('Hybrid', $payload['hybrid']['enabled'] ? 'enabled' : 'disabled');
+            is_string($statsPayload['tenantId']) ? $statsPayload['tenantId'] : 'null');
+        $this->components->twoColumnDetail('Chat Model', $statsPayload['models']['chat']);
+        $this->components->twoColumnDetail('Embedding Model', $statsPayload['models']['embedding']);
+        $this->components->twoColumnDetail('Hybrid', $statsPayload['hybrid']['enabled'] ? 'enabled' : 'disabled');
         $this->components->twoColumnDetail('Hybrid Weights',
-            'semantic='.$payload['hybrid']['semantic_weight'].' keyword='.$payload['hybrid']['keyword_weight']);
+            'semantic='.$statsPayload['hybrid']['semantic_weight'].' keyword='.$statsPayload['hybrid']['keyword_weight']);
 
         return self::SUCCESS;
     }

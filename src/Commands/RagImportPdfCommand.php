@@ -27,87 +27,87 @@ final class RagImportPdfCommand extends Command
 
     public function handle(Filesystem $files): int
     {
-        /** @var string $path */
-        $path = $this->argument('path');
-        if (! $files->exists($path)) {
-            warning('Path not found: '.$path);
+        /** @var string $importPath */
+        $importPath = $this->argument('path');
+        if (! $files->exists($importPath)) {
+            warning('Path not found: '.$importPath);
 
             return self::INVALID;
         }
 
-        $isDir = $files->isDirectory($path);
-        $pdfFiles = $isDir ? collect($files->files($path))
-            ->filter(fn (SplFileInfo $f): bool => mb_strtolower($files->extension($f->getPathname())) === 'pdf')
+        $isDirectory = $files->isDirectory($importPath);
+        $pdfFilePaths = $isDirectory ? collect($files->files($importPath))
+            ->filter(fn (SplFileInfo $fileInfo): bool => mb_strtolower($files->extension($fileInfo->getPathname())) === 'pdf')
             ->map->getPathname()
             ->values()
-            ->all() : [$path];
+            ->all() : [$importPath];
 
-        if ($pdfFiles === []) {
+        if ($pdfFilePaths === []) {
             warning('No PDF files found.');
 
             return self::INVALID;
         }
 
-        $dryRun = (bool) $this->option('dry-run');
-        $sync = (bool) $this->option('sync');
+        $isDryRun = (bool) $this->option('dry-run');
+        $isSynchronous = (bool) $this->option('sync');
 
-        foreach ($pdfFiles as $pdf) {
-            $titleOpt = $this->option('title');
-            $title = is_string($titleOpt) ? $titleOpt : $files->name($pdf);
+        foreach ($pdfFilePaths as $pdfFilePath) {
+            $titleOption = $this->option('title');
+            $documentTitle = is_string($titleOption) ? $titleOption : $files->name($pdfFilePath);
 
-            $sourceTypeOpt = $this->option('source_type');
-            $sourceType = is_string($sourceTypeOpt) ? $sourceTypeOpt : 'pdf';
+            $sourceTypeOption = $this->option('source_type');
+            $documentSourceType = is_string($sourceTypeOption) ? $sourceTypeOption : 'pdf';
 
-            $sourceRefOpt = $this->option('source_ref');
-            $sourceRef = is_string($sourceRefOpt) ? $sourceRefOpt : $pdf;
+            $sourceRefOption = $this->option('source_ref');
+            $documentSourceRef = is_string($sourceRefOption) ? $sourceRefOption : $pdfFilePath;
 
             // Minimal PDF text extraction using built-in stream filter (naive)
-            $raw = $files->get($pdf);
-            $textContent = $this->extractText($raw);
+            $rawPdfContent = $files->get($pdfFilePath);
+            $extractedText = $this->extractText($rawPdfContent);
 
-            if ($dryRun) {
-                $this->components->twoColumnDetail('PDF', (string) $pdf);
-                $this->components->twoColumnDetail('Bytes', (string) mb_strlen($raw));
-                $this->components->twoColumnDetail('Extracted (approx chars)', (string) mb_strlen($textContent));
+            if ($isDryRun) {
+                $this->components->twoColumnDetail('PDF', (string) $pdfFilePath);
+                $this->components->twoColumnDetail('Bytes', (string) mb_strlen($rawPdfContent));
+                $this->components->twoColumnDetail('Extracted (approx chars)', (string) mb_strlen($extractedText));
 
                 continue;
             }
 
-            $langOpt = $this->option('lang');
-            $lang = is_string($langOpt) ? $langOpt : 'en';
+            $languageOption = $this->option('lang');
+            $documentLanguage = is_string($languageOption) ? $languageOption : 'en';
 
             Rag::ingest([
-                'title' => $title,
-                'source_type' => $sourceType,
-                'source_ref' => $sourceRef,
-                'content' => $textContent,
-                'meta' => ['lang' => $lang],
+                'title' => $documentTitle,
+                'source_type' => $documentSourceType,
+                'source_ref' => $documentSourceRef,
+                'content' => $extractedText,
+                'meta' => ['lang' => $documentLanguage],
             ]);
         }
 
-        if (! $dryRun) {
-            $this->components->twoColumnDetail('Mode', $sync ? 'sync' : 'queue');
+        if (! $isDryRun) {
+            $this->components->twoColumnDetail('Mode', $isSynchronous ? 'sync' : 'queue');
         }
 
         return self::SUCCESS;
     }
 
-    private function extractText(string $raw): string
+    private function extractText(string $rawPdfContent): string
     {
         // Very naive PDF text extraction: find text showing operators (Tj/TJ) tokens
         // This is placeholder-level but PHP-native and deterministic.
-        $text = '';
-        if (preg_match_all('/\((.*?)\)\s*Tj/s', $raw, $m)) {
-            $text .= implode("\n", array_map(strip_tags(...), $m[1]));
+        $extractedText = '';
+        if (preg_match_all('/\((.*?)\)\s*Tj/s', $rawPdfContent, $matches)) {
+            $extractedText .= implode("\n", array_map(strip_tags(...), $matches[1]));
         }
-        if (preg_match_all('/\[(.*?)\]\s*TJ/s', $raw, $m2)) {
-            foreach ($m2[1] as $group) {
-                if (preg_match_all('/\((.*?)\)/s', $group, $m3)) {
-                    $text .= "\n".implode('', $m3[1]);
+        if (preg_match_all('/\[(.*?)\]\s*TJ/s', $rawPdfContent, $matches2)) {
+            foreach ($matches2[1] as $textGroup) {
+                if (preg_match_all('/\((.*?)\)/s', $textGroup, $matches3)) {
+                    $extractedText .= "\n".implode('', $matches3[1]);
                 }
             }
         }
 
-        return mb_trim($text) !== '' ? $text : 'PDF content';
+        return mb_trim($extractedText) !== '' ? $extractedText : 'PDF content';
     }
 }

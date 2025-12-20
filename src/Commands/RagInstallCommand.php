@@ -31,14 +31,14 @@ final class RagInstallCommand extends Command
 
         intro('Akira RAG Installer');
 
-        $nonInteractive = (bool) $this->option('force');
+        $isNonInteractive = (bool) $this->option('force');
 
-        $dryRun = (bool) app()->environment('testing');
+        $isDryRun = (bool) app()->environment('testing');
 
-        $publishConfig = $nonInteractive || (fn (): bool => confirm('Publish configuration file?'))();
+        $shouldPublishConfig = $isNonInteractive || (fn (): bool => confirm('Publish configuration file?'))();
 
-        if ($publishConfig) {
-            if ($dryRun) {
+        if ($shouldPublishConfig) {
+            if ($isDryRun) {
                 info('Skipping config publish in testing environment.');
             } else {
                 spin(fn (): bool => $this->callSilent('vendor:publish', ['--tag' => 'laravel-rag-config']) === 0,
@@ -46,13 +46,13 @@ final class RagInstallCommand extends Command
             }
         }
 
-        $publishMigrations = $nonInteractive
+        $shouldPublishMigrations = $isNonInteractive
             || (
                 // @codeCoverageIgnoreStart
 
                 fn (): bool => confirm('Publish migrations?'))(); // @codeCoverageIgnoreEnd
-        if ($publishMigrations) {
-            if ($dryRun) {
+        if ($shouldPublishMigrations) {
+            if ($isDryRun) {
                 info('Skipping migrations publish in testing environment.');
             } else {
                 spin(fn (): bool => $this->callSilent('vendor:publish', ['--tag' => 'laravel-rag-migrations']) === 0,
@@ -60,35 +60,35 @@ final class RagInstallCommand extends Command
             }
         }
 
-        $runMigrate = $nonInteractive
+        $shouldRunMigrations = $isNonInteractive
             ? (bool) $this->option('run-migrate')
             : (
                 // @codeCoverageIgnoreStart
 
                 fn (): bool => confirm('Run database migrations now?', false))(); // @codeCoverageIgnoreEnd
-        if ($runMigrate) {
-            if ($dryRun) {
+        if ($shouldRunMigrations) {
+            if ($isDryRun) {
                 info('Skipping migrate in testing environment.');
             } else {
                 $this->call('migrate');
             }
         }
 
-        $enableTenancy = $nonInteractive
+        $shouldEnableTenancy = $isNonInteractive
             ? (bool) $this->option('with-tenancy')
             : (
                 // @codeCoverageIgnoreStart
 
                 fn (): bool => confirm('Enable multi-tenant mode (tenancy.enabled = true)?',
                     false))(); // @codeCoverageIgnoreEnd
-        if ($enableTenancy) {
-            $path = config_path('rag.php');
-            if (! $files->exists($path)) {
+        if ($shouldEnableTenancy) {
+            $configFilePath = config_path('rag.php');
+            if (! $files->exists($configFilePath)) {
                 warning('Config file not found. Publish the config first.');
             } else {
-                $contents = $files->get($path);
-                $updated = preg_replace("/('enabled'\s*=>\s*)false/", '\\1true', $contents, 1) ?? $contents;
-                $files->put($path, $updated);
+                $configFileContents = $files->get($configFilePath);
+                $updatedConfigContents = preg_replace("/('enabled'\s*=>\s*)false/", '\\1true', $configFileContents, 1) ?? $configFileContents;
+                $files->put($configFilePath, $updatedConfigContents);
                 info('Enabled tenancy in config/rag.php');
             }
         }
@@ -96,16 +96,16 @@ final class RagInstallCommand extends Command
         note('If you find this useful, please consider starring the repo:');
         info('https://github.com/akira-rag/laravel-rag');
 
-        $star = $nonInteractive
+        $shouldOpenGitHub = $isNonInteractive
             ? (bool) $this->option('star')
             : (
                 // @codeCoverageIgnoreStart
 
                 fn (): bool => confirm('Open the GitHub repository now to leave a star?',
                     false))(); // @codeCoverageIgnoreEnd
-        if ($star && ! $dryRun) {
-            $url = 'https://github.com/akira-rag/laravel-rag';
-            $this->openUrl($url);
+        if ($shouldOpenGitHub && ! $isDryRun) {
+            $githubRepositoryUrl = 'https://github.com/akira-rag/laravel-rag';
+            $this->openUrl($githubRepositoryUrl);
         }
 
         info('Install complete.');
@@ -116,11 +116,11 @@ final class RagInstallCommand extends Command
     private function openUrl(string $url): void
     {
 
-        $cmd = PHP_OS_FAMILY === 'Darwin' ? 'open' : (PHP_OS_FAMILY === 'Windows' ? 'start' : 'xdg-open');
+        $openCommand = PHP_OS_FAMILY === 'Darwin' ? 'open' : (PHP_OS_FAMILY === 'Windows' ? 'start' : 'xdg-open');
         try {
-            $handle = @popen($cmd.' '.escapeshellarg($url), 'r');
-            if (is_resource($handle)) {
-                pclose($handle);
+            $processHandle = @popen($openCommand.' '.escapeshellarg($url), 'r');
+            if (is_resource($processHandle)) {
+                pclose($processHandle);
             }
         } catch (Throwable) {
             // ignore
