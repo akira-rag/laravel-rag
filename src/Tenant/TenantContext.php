@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Akira\Rag\Tenant;
 
+use Akira\Rag\Exceptions\TenantResolverException;
 use Illuminate\Contracts\Config\Repository as Config;
-use InvalidArgumentException;
 
 final readonly class TenantContext
 {
@@ -23,13 +23,16 @@ final readonly class TenantContext
 
     public function resolver(): TenantResolver
     {
-        $class = $this->config->string('rag.tenancy.resolver', NullTenantResolver::class);
+        $resolverClass = $this->config->string('rag.tenancy.resolver', NullTenantResolver::class);
 
-        $resolver = resolve($class);
+        $resolverInstance = resolve($resolverClass);
 
-        throw_unless($resolver instanceof TenantResolver, InvalidArgumentException::class, 'Tenant resolver must implement '.TenantResolver::class);
+        throw_unless(
+            $resolverInstance instanceof TenantResolver,
+            TenantResolverException::invalidResolverImplementation($resolverClass, TenantResolver::class)
+        );
 
-        return $resolver;
+        return $resolverInstance;
     }
 
     public function current(): ?string

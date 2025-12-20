@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Akira\Rag;
 
 use Akira\Rag\Exceptions\InvalidPayload;
+use Akira\Rag\Exceptions\InvalidQuestionException;
 use Akira\Rag\Models\RagChunk;
 use Akira\Rag\Models\RagDocument;
 use Akira\Rag\Models\RagEmbedding;
@@ -37,10 +38,10 @@ final readonly class RagManager
 
         foreach (['title', 'source_type', 'source_ref', 'content'] as $requiredField) {
             throw_if(! isset($payload[$requiredField]) || ! is_string($payload[$requiredField]) || $payload[$requiredField] === '',
-                InvalidPayload::class, 'Missing or invalid field: '.$requiredField);
+                InvalidPayload::missingField($requiredField));
         }
 
-        throw_if(array_key_exists('tenant_id', $payload), InvalidPayload::class, 'tenant_id is not allowed in payload');
+        throw_if(array_key_exists('tenant_id', $payload), InvalidPayload::tenantIdNotAllowed());
 
         $metadata = is_array($payload['meta'] ?? null) ? $payload['meta'] : [];
 
@@ -110,7 +111,7 @@ final readonly class RagManager
     public function ask(string $question, array $filters = []): array
     {
 
-        throw_if($question === '', InvalidPayload::class, 'Question must be non-empty');
+        throw_if($question === '', InvalidQuestionException::emptyQuestion());
 
         $tenantId = $this->tenant->current();
         $tenantColumn = $this->tenant->column();
