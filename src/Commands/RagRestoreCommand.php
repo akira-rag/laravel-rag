@@ -90,7 +90,9 @@ final class RagRestoreCommand extends Command
                 warning('Backup is missing metadata. This may be an invalid or corrupted backup.');
             }
 
-            $backupTenant = $backupData['meta']['tenant'] ?? null;
+            $backupTenant = is_array($backupData['meta'] ?? null) && isset($backupData['meta']['tenant']) && is_string($backupData['meta']['tenant'])
+                ? $backupData['meta']['tenant']
+                : null;
             if ($tenant->enabled() && $backupTenant !== null && $backupTenant !== $tenantId) {
                 Log::warning('[rag:restore] Tenant mismatch', [
                     'current_tenant' => $tenantId,

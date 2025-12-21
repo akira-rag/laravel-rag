@@ -152,7 +152,7 @@ final class RagIngestCommand extends Command
             }
 
             $textContent = $files->get($filePath);
-            if ($textContent === '') {
+            if ($textContent === '' || mb_trim($textContent) === '') {
                 Log::warning('[rag:ingest] Empty file content', ['tenant' => $tenantId, 'path' => $filePath]);
                 warning('File is empty: '.$filePath);
 
@@ -160,7 +160,7 @@ final class RagIngestCommand extends Command
             }
         }
 
-        if (mb_strlen($textContent) === 0) {
+        if (mb_trim($textContent) === '') {
             Log::warning('[rag:ingest] Empty text content', ['tenant' => $tenantId]);
             warning('Content cannot be empty');
 
