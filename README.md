@@ -3,18 +3,19 @@
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/akira/laravel-rag.svg?style=flat-square)](https://packagist.org/packages/akira/laravel-rag)
 [![Total Downloads](https://img.shields.io/packagist/dt/akira/laravel-rag.svg?style=flat-square)](https://packagist.org/packages/akira/laravel-rag)
 
-A production-ready Retrieval-Augmented Generation (RAG) system for Laravel 12+ with PostgreSQL + pgvector. Built with clean architecture, type safety, and deterministic behavior.
+A production-ready Retrieval-Augmented Generation (RAG) system for Laravel 12+ with PostgreSQL + pgvector. Built with
+clean architecture, type safety, and deterministic behavior.
 
 ## Features
 
-- 🎯 **Clean Architecture** - Facade → Service → Manager pattern
-- 🔒 **Type Safety** - Full type hints and custom exceptions
-- 🏢 **Multi-tenant Support** - Optional tenant isolation with custom resolvers
-- ⚡ **Performance** - HNSW indexing, caching, and optimized queries
-- 🔄 **Idempotent Ingestion** - Hash-based deduplication
-- 📊 **Audit Logging** - Built-in query tracking
-- 🧩 **Deterministic Chunking** - Configurable token-based splitting
-- 🛠️ **CLI Tools** - Rich interactive commands for management
+- **Clean Architecture** - Facade → Service → Manager pattern
+- **Type Safety** - Full type hints and custom exceptions
+- **Multi-tenant Support** - Optional tenant isolation with custom resolvers
+- **Performance** - HNSW indexing, caching, and optimized queries
+- **Idempotent Ingestion** - Hash-based deduplication
+- **Audit Logging** - Built-in query tracking
+- **Deterministic Chunking** - Configurable token-based splitting
+- ️ **CLI Tools** - Rich interactive commands for management
 
 ## Requirements
 
@@ -33,6 +34,7 @@ php artisan rag:install
 ```
 
 The installer will guide you through:
+
 - Publishing configuration files
 - Publishing migrations
 - Running migrations
@@ -64,7 +66,8 @@ php artisan migrate
 Ensure pgvector extension is available:
 
 ```sql
-CREATE EXTENSION IF NOT EXISTS vector;
+CREATE
+EXTENSION IF NOT EXISTS vector;
 ```
 
 ## Quick Start
@@ -400,12 +403,13 @@ it('can ingest and retrieve documents', function () {
 ## Documentation
 
 For detailed documentation, visit:
-- 📚 [Full Documentation](docs/01-Introduction.md)
-- 🔧 [Configuration Guide](docs/04-Configuration.md)
-- 🏢 [Multi-tenancy Setup](docs/06-Tenancy.md)
-- 📝 [Ingestion Guide](docs/07-Ingestion.md)
-- 💬 [Asking Queries](docs/08-Asking.md)
-- 🎯 [Recipes & Examples](docs/10-Recipes.md)
+
+- [Full Documentation](docs/01-Introduction.md)
+- [Configuration Guide](docs/04-Configuration.md)
+- [Multi-tenancy Setup](docs/06-Tenancy.md)
+- [Ingestion Guide](docs/07-Ingestion.md)
+- [Asking Queries](docs/08-Asking.md)
+- [Recipes & Examples](docs/10-Recipes.md)
 
 ## Changelog
 
